@@ -167,6 +167,7 @@ RB_BUILTIN_APPS = [
     'reviewboard.diffviewer',
     'reviewboard.extensions',
     'reviewboard.hostingsvcs',
+    'reviewboard.integrations',
     'reviewboard.notifications',
     'reviewboard.reviews',
     'reviewboard.scmtools',
