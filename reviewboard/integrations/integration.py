@@ -17,7 +17,7 @@ class Integration(object):
     config_template = None
 
     def __init__(self, config):
-        self.integration_id = ".".join([self.__module__, self.__name__])
+        self.integration_id = ".".join([self.__module__, self.__class__.__name__])
         self.config = config
 
     def shutdown(self):
