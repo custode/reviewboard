@@ -12,7 +12,7 @@ from reviewboard.integrations.integration import get_integration
 
 class ConfiguredIntegration(models.Model):
     integration_id = models.CharField(max_length=255)
-    description = models.CharField(blank=True)
+    description = models.CharField(max_length=255, blank=True)
     is_enabled = models.BooleanField(default=False)
     configuration = JSONField(blank=True)
     local_site = models.ForeignKey(LocalSite,
