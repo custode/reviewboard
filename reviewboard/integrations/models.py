@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from djblets.db.fields import JSONField
 
 from reviewboard.site.models import LocalSite
+from reviewboard.integrations.integration import get_integration
 
 class ConfiguredIntegration(models.Model):
     integration_id = models.CharField(max_length=255)
@@ -18,6 +19,19 @@ class ConfiguredIntegration(models.Model):
                                     verbose_name=_('Local site'),
                                     blank=True,
                                     null=True)
+
+
+    @property
+    def integration(self):
+        if not hasattr(self, '_integration'):
+            cls = get_integration(self.id)
+
+            if cls:
+                self._integration = cls[self.integration_id]
+            else:
+                self._integration = None
+
+        return self._integration
 
     def is_accessible_by(self, user):
         # TODO: Implements permission
