@@ -9,6 +9,7 @@ from djblets.db.fields import JSONField
 from reviewboard.site.models import LocalSite
 from reviewboard.integrations.integration import get_integration
 
+
 class ConfiguredIntegration(models.Model):
     integration_id = models.CharField(max_length=255)
     description = models.CharField(blank=True)
@@ -20,14 +21,13 @@ class ConfiguredIntegration(models.Model):
                                     blank=True,
                                     null=True)
 
-
     @property
     def integration(self):
         if not hasattr(self, '_integration'):
             cls = get_integration(self.id)
 
             if cls:
-                self._integration = cls[self.integration_id]
+                self._integration = cls(self)
             else:
                 self._integration = None
 
