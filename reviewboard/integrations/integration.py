@@ -38,17 +38,17 @@ _integrations = {}
 def register_integration(integration):
     """Register a given integration"""
 
-    if integration.id in _integrations:
+    if integration.integration_id in _integrations:
         raise KeyError('"%s" is already a registered integration' % integration.name)
 
-    _integrations[integration.id] = integration
+    _integrations[integration.integration_id] = integration
 
 
 def unregister_integration(integration):
     """Deregister a given integration"""
 
     try:
-        del _integrations[integration.id]
+        del _integrations[integration.integration_id]
     except KeyError:
         logging.error('Failed to unregister unknown integration "%s"' % integration.name)
         raise KeyError('"%s" is not a registered integration' % integration.id)
