@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import logging
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from djblets.db.fields import JSONField
@@ -16,10 +14,10 @@ class ConfiguredIntegration(models.Model):
     is_enabled = models.BooleanField(default=False)
     configuration = JSONField(blank=True)
     local_site = models.ForeignKey(LocalSite,
-                                    related_name='integration_configurations',
-                                    verbose_name=_('Local site'),
-                                    blank=True,
-                                    null=True)
+                                   related_name='integration_configurations',
+                                   verbose_name=_('Local site'),
+                                   blank=True,
+                                   null=True)
 
     @property
     def integration(self):
@@ -41,9 +39,9 @@ class ConfiguredIntegration(models.Model):
         """
         return not self.local_site or self.local_site.is_accessible_by(user)
 
-
     def is_mutable_by(self, user):
-        """Return whether or not the user can modify the configuration of the integration.
+        """Return whether or not the user can modify the configuration of
+        the integration.
 
         The integration can be change by an administrator of the global site
         with the proper permission or the administrator of the LocalSite.
