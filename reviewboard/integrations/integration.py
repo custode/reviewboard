@@ -61,7 +61,7 @@ def register_integration(integration):
 
 
 def unregister_integration(integration):
-    """Deregister a given integration"""
+    """Deregister a given integration."""
 
     try:
         del _integrations[integration.integration_id]
