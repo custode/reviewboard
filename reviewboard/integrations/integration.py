@@ -4,7 +4,12 @@ import logging
 
 
 class Integration(object):
-    """ An interface to third-party services"""
+    """Base class for an intergration.
+
+    Integration provided by an extension must be subclass of this
+    class. This provides the setting for setting up, authenticating
+    and shutting down of the integration.
+    """
 
     integration_id = None
     name = None
@@ -17,26 +22,37 @@ class Integration(object):
     config_template = None
 
     def __init__(self, config):
-        self.integration_id = ".".join([self.__module__, self.__class__.__name__])
+        if not self.integration_id:
+            self.integration_id = ".".join(
+                [self.__module__, self.__class__.__name__])
         self.config = config
 
-    def shutdown(self):
+        self.initialize()
+
+    def initialize(self):
+        """Initialize the integration.
+
+        This provides any custom initialization for the subclass.
         """
-        Shut down the config and deregister all the services provided by the integration
+        pass
+
+    def shutdown(self):
+        """Shut down the integration.
+
+        Subclass should override this to shut down the config and
+        deregister all the services provided by the integration.
         """
         raise NotImplementedError
 
     def get_authentication_url(self):
-        """
-        Return the authentication url for the integration
-        """
+        """Return the authentication url for the integration."""
         raise NotImplementedError
 
 _integrations = {}
 
 
 def register_integration(integration):
-    """Register a given integration"""
+    """Register a given integration."""
 
     if integration.integration_id in _integrations:
         raise KeyError('"%s" is already a registered integration' % integration.name)
