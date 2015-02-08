@@ -32,7 +32,7 @@ class Integration(object):
     def initialize(self):
         """Initialize the integration.
 
-        This provides any custom initialization for the subclass.
+        This provides custom initialization for the subclass.
         """
         pass
 
@@ -55,19 +55,22 @@ def register_integration(integration):
     """Register a given integration."""
 
     if integration.integration_id in _integrations:
-        raise KeyError('"%s" is already a registered integration' % integration.name)
+        raise KeyError('"%s" is already a registered integration'
+                       % integration.name)
 
     _integrations[integration.integration_id] = integration
 
 
 def unregister_integration(integration):
-    """Deregister a given integration."""
+    """Unregister a given integration."""
 
     try:
         del _integrations[integration.integration_id]
     except KeyError:
-        logging.error('Failed to unregister unknown integration "%s"' % integration.name)
-        raise KeyError('"%s" is not a registered integration' % integration.id)
+        logging.error('Failed to unregister unknown integration'
+                      ' "%s"' % integration.name)
+        raise KeyError('"%s" is not a registered integration'
+                       % integration.integration_id)
 
 
 def get_integrations():
