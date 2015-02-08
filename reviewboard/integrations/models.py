@@ -22,7 +22,7 @@ class ConfiguredIntegration(models.Model):
     @property
     def integration(self):
         if not hasattr(self, '_integration'):
-            cls = get_integration(self.id)
+            cls = get_integration(self.integration_id)
 
             if cls:
                 self._integration = cls(self)
