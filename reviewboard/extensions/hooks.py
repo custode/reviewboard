@@ -25,7 +25,7 @@ from reviewboard.reviews.ui.base import register_ui, unregister_ui
 from reviewboard.webapi.server_info import (register_webapi_capabilities,
                                             unregister_webapi_capabilities)
 from reviewboard.integrations.integration import (register_integration,
-                                                    unregister_integration)
+                                                  unregister_integration)
 
 
 @six.add_metaclass(ExtensionHookPoint)
@@ -34,7 +34,7 @@ class AuthBackendHook(ExtensionHook):
 
     Authentication backends control user authentication, registration, and
     user lookup, and user data manipulation.
- 
+
     This hook takes the class of an authentication backend that should
     be made available to the server.
     """
@@ -409,6 +409,7 @@ class ReviewUIHook(ExtensionHook):
         for review_ui in self.review_uis:
             unregister_ui(review_ui)
 
+
 @six.add_metaclass(ExtensionHookPoint)
 class FileAttachmentThumbnailHook(ExtensionHook):
     """This hook allows custom thumbnails to be defined for file attachments.
@@ -544,9 +545,11 @@ class UserPageSidebarItemsHook(DataGridSidebarItemsHook):
         super(UserPageSidebarItemsHook, self).__init__(
             extension, UserPageReviewRequestDataGrid, item_classes)
 
+
 @six.add_metaclass(ExtensionHookPoint)
 class IntegrationHook(ExtensionHook):
     """This hook allows adding integration provided by an extensions."""
+
     def __init__(self, extension, integration):
         super(IntegrationHook, self).__init__(extension)
         self.integration = integration
