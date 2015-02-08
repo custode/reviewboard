@@ -35,7 +35,7 @@ class ConfiguredIntegration(models.Model):
         """Returns whether or not the user has access to the integration.
 
         The integration can be access by the user if it is set to global or if
-        the user have access to the local site.
+        the user have access to the LocalSite.
         """
         return not self.local_site or self.local_site.is_accessible_by(user)
 
