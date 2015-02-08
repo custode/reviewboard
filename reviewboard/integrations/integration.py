@@ -78,6 +78,6 @@ def get_integrations():
     return _integrations.values()
 
 
-def get_integration(idx):
+def get_integration(integration_id):
     """Retrieves the integration with the given integration id"""
-    return _integrations.get(idx, None)
+    return _integrations.get(integration_id, None)
