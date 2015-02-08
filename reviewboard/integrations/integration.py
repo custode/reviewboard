@@ -75,7 +75,7 @@ def unregister_integration(integration):
 
 def get_integrations():
     """Gets the list of integrations."""
-    return _integrations.values()
+    return list(_integrations.values())
 
 
 def get_integration(integration_id):
