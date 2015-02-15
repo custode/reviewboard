@@ -10,9 +10,8 @@ from reviewboard.integrations.models import ConfiguredIntegration
 
 class IntegrationManager(object):
     """A manager for all integrations."""
-    _config_instances = {}
-
     def __init__(self):
+        self._config_instances = {}
         self.start()
 
     def _initialize_configs(self):
