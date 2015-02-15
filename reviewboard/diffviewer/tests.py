@@ -9,6 +9,7 @@ from django.utils.six.moves import zip_longest
 from djblets.cache.backend import cache_memoize
 from djblets.db.fields import Base64DecodedValue
 from djblets.siteconfig.models import SiteConfiguration
+from djblets.testing.decorators import add_fixtures
 from kgb import SpyAgency
 import nose
 
@@ -61,50 +62,155 @@ class MyersDifferTest(TestCase):
 
 
 class InterestingLinesTest(TestCase):
-    PREFIX = os.path.join(os.path.dirname(__file__), 'testdata')
-
     def test_csharp(self):
         """Testing interesting lines scanner with a C# file"""
-        lines = self._get_lines("helloworld.cs")
+        a = (b'public class HelloWorld {\n'
+             b'    public static void Main() {\n'
+             b'        System.Console.WriteLine("Hello world!");\n'
+             b'    }\n'
+             b'}\n')
+
+        b = (b'/*\n'
+             b' * The Hello World class.\n'
+             b' */\n'
+             b'public class HelloWorld\n'
+             b'{\n'
+             b'    /*\n'
+             b'     * The main function in this class.\n'
+             b'     */\n'
+             b'    public static void Main()\n'
+             b'    {\n'
+             b'        /*\n'
+             b'         * Print "Hello world!" to the screen.\n'
+             b'         */\n'
+             b'        System.Console.WriteLine("Hello world!");\n'
+             b'    }\n'
+             b'}\n')
+
+        lines = self._get_lines(a, b, 'helloworld.cs')
 
         self.assertEqual(len(lines[0]), 2)
         self.assertEqual(lines[0][0], (0, 'public class HelloWorld {\n'))
-        self.assertEqual(lines[0][1], (1, '\tpublic static void Main() {\n'))
+        self.assertEqual(lines[0][1], (1, '    public static void Main() {\n'))
 
         self.assertEqual(lines[1][0], (3, 'public class HelloWorld\n'))
-        self.assertEqual(lines[1][1], (8, '\tpublic static void Main()\n'))
+        self.assertEqual(lines[1][1], (8, '    public static void Main()\n'))
 
     def test_java(self):
         """Testing interesting lines scanner with a Java file"""
-        lines = self._get_lines("helloworld.java")
+        a = (b'class HelloWorld {\n'
+             b'    public static void main(String[] args) {\n'
+             b'        System.out.println("Hello world!");\n'
+             b'    }\n'
+             b'}\n')
+
+        b = (b'/*\n'
+             b' * The Hello World class.\n'
+             b' */\n'
+             b'class HelloWorld\n'
+             b'{\n'
+             b'    /*\n'
+             b'     * The main function in this class.\n'
+             b'     */\n'
+             b'    public static void main(String[] args)\n'
+             b'    {\n'
+             b'        /*\n'
+             b'         * Print "Hello world!" to the screen.\n'
+             b'         */\n'
+             b'        System.out.println("Hello world!");\n'
+             b'    }\n'
+             b'}\n')
+
+        lines = self._get_lines(a, b, 'helloworld.java')
 
         self.assertEqual(len(lines[0]), 2)
         self.assertEqual(lines[0][0], (0, 'class HelloWorld {\n'))
         self.assertEqual(lines[0][1],
-                         (1, '\tpublic static void main(String[] args) {\n'))
+                         (1, '    public static void main(String[] args) {\n'))
 
         self.assertEqual(len(lines[1]), 2)
         self.assertEqual(lines[1][0], (3, 'class HelloWorld\n'))
         self.assertEqual(lines[1][1],
-                         (8, '\tpublic static void main(String[] args)\n'))
+                         (8, '    public static void main(String[] args)\n'))
 
     def test_javascript(self):
         """Testing interesting lines scanner with a JavaScript file"""
-        lines = self._get_lines("helloworld.js")
+        a = (b'function helloWorld() {\n'
+             b'    alert("Hello world!");\n'
+             b'}\n'
+             b'\n'
+             b'var data = {\n'
+             b'    helloWorld2: function() {\n'
+             b'        alert("Hello world!");\n'
+             b'    }\n'
+             b'}\n'
+             b'\n'
+             b'var helloWorld3 = function() {\n'
+             b'    alert("Hello world!");\n'
+             b'}\n')
+
+        b = (b'/*\n'
+             b' * Prints "Hello world!"\n'
+             b' */\n'
+             b'function helloWorld()\n'
+             b'{\n'
+             b'    alert("Hello world!");\n'
+             b'}\n'
+             b'\n'
+             b'var data = {\n'
+             b'    /*\n'
+             b'     * Prints "Hello world!"\n'
+             b'     */\n'
+             b'    helloWorld2: function()\n'
+             b'    {\n'
+             b'        alert("Hello world!");\n'
+             b'    }\n'
+             b'}\n'
+             b'\n'
+             b'var helloWorld3 = function()\n'
+             b'{\n'
+             b'    alert("Hello world!");\n'
+             b'}\n')
+
+        lines = self._get_lines(a, b, 'helloworld.js')
 
         self.assertEqual(len(lines[0]), 3)
         self.assertEqual(lines[0][0], (0, 'function helloWorld() {\n'))
-        self.assertEqual(lines[0][1], (5, '\thelloWorld2: function() {\n'))
+        self.assertEqual(lines[0][1], (5, '    helloWorld2: function() {\n'))
         self.assertEqual(lines[0][2], (10, 'var helloWorld3 = function() {\n'))
 
         self.assertEqual(len(lines[1]), 3)
         self.assertEqual(lines[1][0], (3, 'function helloWorld()\n'))
-        self.assertEqual(lines[1][1], (12, '\thelloWorld2: function()\n'))
+        self.assertEqual(lines[1][1], (12, '    helloWorld2: function()\n'))
         self.assertEqual(lines[1][2], (18, 'var helloWorld3 = function()\n'))
 
     def test_objective_c(self):
         """Testing interesting lines scanner with an Objective C file"""
-        lines = self._get_lines("helloworld.m")
+        a = (b'@interface MyClass : Object\n'
+             b'- (void) sayHello;\n'
+             b'@end\n'
+             b'\n'
+             b'@implementation MyClass\n'
+             b'- (void) sayHello {\n'
+             b'    printf("Hello world!");\n'
+             b'}\n'
+             b'@end\n')
+
+        b = (b'@interface MyClass : Object\n'
+             b'- (void) sayHello;\n'
+             b'@end\n'
+             b'\n'
+             b'@implementation MyClass\n'
+             b'/*\n'
+             b' * Prints Hello world!\n'
+             b' */\n'
+             b'- (void) sayHello\n'
+             b'{\n'
+             b'    printf("Hello world!");\n'
+             b'}\n'
+             b'@end\n')
+
+        lines = self._get_lines(a, b, 'helloworld.m')
 
         self.assertEqual(len(lines[0]), 3)
         self.assertEqual(lines[0][0], (0, '@interface MyClass : Object\n'))
@@ -118,7 +224,17 @@ class InterestingLinesTest(TestCase):
 
     def test_perl(self):
         """Testing interesting lines scanner with a Perl file"""
-        lines = self._get_lines("helloworld.pl")
+        a = (b'sub helloWorld {\n'
+             b'    print "Hello world!"\n'
+             b'}\n')
+
+        b = (b'# Prints Hello World\n'
+             b'sub helloWorld\n'
+             b'{\n'
+             b'    print "Hello world!"\n'
+             b'}\n')
+
+        lines = self._get_lines(a, b, 'helloworld.pl')
 
         self.assertEqual(len(lines[0]), 1)
         self.assertEqual(lines[0][0], (0, 'sub helloWorld {\n'))
@@ -128,20 +244,61 @@ class InterestingLinesTest(TestCase):
 
     def test_php(self):
         """Testing interesting lines scanner with a PHP file"""
-        lines = self._get_lines("helloworld.php")
+        a = (b'<?php\n'
+             b'class HelloWorld {\n'
+             b'    function helloWorld() {\n'
+             b'        print "Hello world!";\n'
+             b'    }\n'
+             b'}\n'
+             b'?>\n')
+
+        b = (b'<?php\n'
+             b'/*\n'
+             b' * Hello World class\n'
+             b' */\n'
+             b'class HelloWorld\n'
+             b'{\n'
+             b'    /*\n'
+             b'     * Prints Hello World\n'
+             b'     */\n'
+             b'    function helloWorld()\n'
+             b'    {\n'
+             b'        print "Hello world!";\n'
+             b'    }\n'
+             b'\n'
+             b'    public function foo() {\n'
+             b'        print "Hello world!";\n'
+             b'    }\n'
+             b'}\n'
+             b'?>\n')
+
+        lines = self._get_lines(a, b, 'helloworld.php')
 
         self.assertEqual(len(lines[0]), 2)
         self.assertEqual(lines[0][0], (1, 'class HelloWorld {\n'))
-        self.assertEqual(lines[0][1], (2, '\tfunction helloWorld() {\n'))
+        self.assertEqual(lines[0][1], (2, '    function helloWorld() {\n'))
 
         self.assertEqual(len(lines[1]), 3)
         self.assertEqual(lines[1][0], (4, 'class HelloWorld\n'))
-        self.assertEqual(lines[1][1], (9, '\tfunction helloWorld()\n'))
-        self.assertEqual(lines[1][2], (14, '\tpublic function foo() {\n'))
+        self.assertEqual(lines[1][1], (9, '    function helloWorld()\n'))
+        self.assertEqual(lines[1][2], (14, '    public function foo() {\n'))
 
     def test_python(self):
         """Testing interesting lines scanner with a Python file"""
-        lines = self._get_lines("helloworld.py")
+        a = (b'class HelloWorld:\n'
+             b'    def main(self):\n'
+             b'        print "Hello World"\n')
+
+        b = (b'class HelloWorld:\n'
+             b'    """The Hello World class"""\n'
+             b'\n'
+             b'    def main(self):\n'
+             b'        """The main function in this class."""\n'
+             b'\n'
+             b'        # Prints "Hello world!" to the screen.\n'
+             b'        print "Hello world!"\n')
+
+        lines = self._get_lines(a, b, 'helloworld.py')
 
         self.assertEqual(len(lines[0]), 2)
         self.assertEqual(lines[0][0], (0, 'class HelloWorld:\n'))
@@ -153,24 +310,32 @@ class InterestingLinesTest(TestCase):
 
     def test_ruby(self):
         """Testing interesting lines scanner with a Ruby file"""
-        lines = self._get_lines("helloworld.rb")
+        a = (b'class HelloWorld\n'
+             b'    def helloWorld\n'
+             b'        puts "Hello world!"\n'
+             b'    end\n'
+             b'end\n')
+
+        b = (b'# Hello World class\n'
+             b'class HelloWorld\n'
+             b'    # Prints Hello World\n'
+             b'    def helloWorld()\n'
+             b'        puts "Hello world!"\n'
+             b'    end\n'
+             b'end\n')
+
+        lines = self._get_lines(a, b, 'helloworld.rb')
 
         self.assertEqual(len(lines[0]), 2)
         self.assertEqual(lines[0][0], (0, 'class HelloWorld\n'))
-        self.assertEqual(lines[0][1], (1, '\tdef helloWorld\n'))
+        self.assertEqual(lines[0][1], (1, '    def helloWorld\n'))
 
         self.assertEqual(len(lines[1]), 2)
         self.assertEqual(lines[1][0], (1, 'class HelloWorld\n'))
-        self.assertEqual(lines[1][1], (3, '\tdef helloWorld()\n'))
+        self.assertEqual(lines[1][1], (3, '    def helloWorld()\n'))
 
-    def _get_lines(self, filename):
-        with open(os.path.join(self.PREFIX, "orig_src", filename), "r") as f:
-            a = f.readlines()
-
-        with open(os.path.join(self.PREFIX, "new_src", filename), "r") as f:
-            b = f.readlines()
-
-        differ = MyersDiffer(a, b)
+    def _get_lines(self, a, b, filename):
+        differ = MyersDiffer(a.splitlines(True), b.splitlines(True))
         differ.add_interesting_lines_for_headers(filename)
 
         # Begin the scan.
@@ -183,60 +348,18 @@ class InterestingLinesTest(TestCase):
 
 
 class DiffParserTest(TestCase):
-    PREFIX = os.path.join(os.path.dirname(__file__), 'testdata')
-
-    def diff(self, options=''):
-        f = os.popen('diff -rN -x .svn %s %s/orig_src %s/new_src' %
-                     (options, self.PREFIX, self.PREFIX))
-        data = f.read()
-        f.close()
-        return data
-
-    def _compare_diffs(self, files, testdir):
-        self.assertEqual(len(files), 14)
-
-        for file in files:
-            f = open("%s/diffs/%s/%s.diff" %
-                     (self.PREFIX, testdir, os.path.basename(file.newFile)))
-            data = f.read()
-            f.close()
-
-            self.assertTrue(file.origFile.startswith("%s/orig_src/" %
-                                                     self.PREFIX))
-            self.assertTrue(file.newFile.startswith("%s/new_src/" %
-                                                    self.PREFIX))
-            self.assertNotEquals(file.origInfo, "")
-            self.assertNotEquals(file.newInfo, "")
-
-            self.assertNotEquals(file.data, "")
-            self.assertNotEquals(data, "")
-
-            # Can't really compare the strings because of timestamps...
-
-    def test_unified_diff(self):
-        """Testing DiffParser.parse on a unified diff"""
-        data = self.diff('-u')
-        files = diffparser.DiffParser(data).parse()
-        self._compare_diffs(files, "unified")
-
-    def test_context_diff(self):
-        """Testing DiffParser.parse on a context diff"""
-        data = self.diff('-c')
-        files = diffparser.DiffParser(data).parse()
-        self._compare_diffs(files, "context")
-
     def test_form_feed(self):
         """Testing DiffParser.parse with a form feed in the file"""
         data = (
-            '--- README  123\n'
-            '+++ README  (new)\n'
-            '@ -1,4 +1,6 @@\n'
-            ' Line 1\n'
-            ' Line 2\n'
-            '+\x0c\n'
-            '+Inserted line\n'
-            ' Line 3\n'
-            ' Line 4\n')
+            b'--- README  123\n'
+            b'+++ README  (new)\n'
+            b'@ -1,4 +1,6 @@\n'
+            b' Line 1\n'
+            b' Line 2\n'
+            b'+\x0c\n'
+            b'+Inserted line\n'
+            b' Line 3\n'
+            b' Line 4\n')
         files = diffparser.DiffParser(data).parse()
 
         self.assertEqual(len(files), 1)
@@ -246,17 +369,50 @@ class DiffParserTest(TestCase):
 
     def test_patch(self):
         """Testing diffutils.patch"""
-        file = 'foo.c'
+        old = (b'int\n'
+               b'main()\n'
+               b'{\n'
+               b'\tprintf("foo\\n");\n'
+               b'}\n')
 
-        old = self._get_file('orig_src', file)
-        new = self._get_file('new_src', file)
-        diff = self._get_file('diffs', 'unified', 'foo.c.diff')
+        new = (b'#include <stdio.h>\n'
+               b'\n'
+               b'int\n'
+               b'main()\n'
+               b'{\n'
+               b'\tprintf("foo bar\\n");\n'
+               b'\treturn 0;\n'
+               b'}\n')
 
-        patched = diffutils.patch(diff, old, file)
+        diff = (b'--- foo.c\t2007-01-24 02:11:31.000000000 -0800\n'
+                b'+++ foo.c\t2007-01-24 02:14:42.000000000 -0800\n'
+                b'@@ -1,5 +1,8 @@\n'
+                b'+#include <stdio.h>\n'
+                b'+\n'
+                b' int\n'
+                b' main()\n'
+                b' {\n'
+                b'-\tprintf("foo\\n");\n'
+                b'+\tprintf("foo bar\\n");\n'
+                b'+\treturn 0;\n'
+                b' }\n')
+
+        patched = diffutils.patch(diff, old, 'foo.c')
         self.assertEqual(patched, new)
 
-        diff = self._get_file('diffs', 'unified', 'README.diff')
-        self.assertRaises(Exception, lambda: diffutils.patch(diff, old, file))
+        diff = (b'--- README\t2007-01-24 02:10:28.000000000 -0800\n'
+                b'+++ README\t2007-01-24 02:11:01.000000000 -0800\n'
+                b'@@ -1,9 +1,10 @@\n'
+                b' Test data for a README file.\n'
+                b' \n'
+                b' There\'s a line here.\n'
+                b'-\n'
+                b' A line there.\n'
+                b' \n'
+                b' And here.\n')
+
+        with self.assertRaises(Exception):
+            diffutils.patch(diff, old, 'foo.c')
 
     def test_empty_patch(self):
         """Testing diffutils.patch with an empty diff"""
@@ -267,25 +423,94 @@ class DiffParserTest(TestCase):
 
     def test_patch_crlf_file_crlf_diff(self):
         """Testing diffutils.patch with a CRLF file and a CRLF diff"""
-        old = self._get_file('orig_src', 'README.crlf')
-        new = self._get_file('new_src', 'README')
-        diff = self._get_file('diffs', 'unified', 'README.crlf.diff')
+        old = (b'Test data for a README file.\r\n'
+               b'\r\n'
+               b'There\'s a line here.\r\n'
+               b'\r\n'
+               b'A line there.\r\n'
+               b'\r\n'
+               b'And here.\r\n')
+
+        new = (b'Test data for a README file.\n'
+               b'\n'
+               b'There\'s a line here.\n'
+               b'A line there.\n'
+               b'\n'
+               b'And here.\n')
+
+        diff = (b'--- README\t2007-07-02 23:33:27.000000000 -0700\n'
+                b'+++ README\t2007-07-02 23:32:59.000000000 -0700\n'
+                b'@@ -1,7 +1,6 @@\n'
+                b' Test data for a README file.\r\n'
+                b' \r\n'
+                b' There\'s a line here.\r\n'
+                b'-\r\n'
+                b' A line there.\r\n'
+                b' \r\n'
+                b' And here.\r\n')
+
         patched = diffutils.patch(diff, old, new)
         self.assertEqual(patched, new)
 
     def test_patch_cr_file_crlf_diff(self):
         """Testing diffutils.patch with a CR file and a CRLF diff"""
-        old = self._get_file('orig_src', 'README')
-        new = self._get_file('new_src', 'README')
-        diff = self._get_file('diffs', 'unified', 'README.crlf.diff')
+        old = (b'Test data for a README file.\n'
+               b'\n'
+               b'There\'s a line here.\n'
+               b'\n'
+               b'A line there.\n'
+               b'\n'
+               b'And here.\n')
+
+        new = (b'Test data for a README file.\n'
+               b'\n'
+               b'There\'s a line here.\n'
+               b'A line there.\n'
+               b'\n'
+               b'And here.\n')
+
+        diff = (b'--- README\t2007-07-02 23:33:27.000000000 -0700\n'
+                b'+++ README\t2007-07-02 23:32:59.000000000 -0700\n'
+                b'@@ -1,7 +1,6 @@\n'
+                b' Test data for a README file.\r\n'
+                b' \r\n'
+                b' There\'s a line here.\r\n'
+                b'-\r\n'
+                b' A line there.\r\n'
+                b' \r\n'
+                b' And here.\r\n')
+
         patched = diffutils.patch(diff, old, new)
         self.assertEqual(patched, new)
 
     def test_patch_crlf_file_cr_diff(self):
         """Testing diffutils.patch with a CRLF file and a CR diff"""
-        old = self._get_file('orig_src', 'README.crlf')
-        new = self._get_file('new_src', 'README')
-        diff = self._get_file('diffs', 'unified', 'README.diff')
+        old = (b'Test data for a README file.\r\n'
+               b'\r\n'
+               b'There\'s a line here.\r\n'
+               b'\r\n'
+               b'A line there.\r\n'
+               b'\r\n'
+               b'And here.\r\n')
+
+        new = (b'Test data for a README file.\n'
+               b'\n'
+               b'There\'s a line here.\n'
+               b'A line there.\n'
+               b'\n'
+               b'And here.\n')
+
+        diff = (b'--- README\t2007-07-02 23:33:27.000000000 -0700\n'
+                b'+++ README\t2007-07-02 23:32:59.000000000 -0700\n'
+                b'@@ -1,7 +1,6 @@\n'
+                b' Test data for a README file.\n'
+                b' \n'
+                b' There\'s a line here.\n'
+                b'-\n'
+                b' A line there.\n'
+                b' \n'
+                b' And here.\n')
+
         patched = diffutils.patch(diff, old, new)
         self.assertEqual(patched, new)
 
@@ -293,40 +518,170 @@ class DiffParserTest(TestCase):
         """Testing diffutils.patch with a file indicating no newline
         with a trailing \\r
         """
-        old = self._get_file('orig_src', 'README.nonewline')
-        new = self._get_file('new_src', 'README.nonewline')
-        diff = self._get_file('diffs', 'unified', 'README.nonewline.diff')
+        old = (
+            b'Test data for a README file.\n'
+            b'\n'
+            b'There\'s a line here.\n'
+            b'\n'
+            b'A line there.\n'
+            b'\n'
+            b'And a new line here!\n'
+            b'\n'
+            b'We must have several lines to reproduce this problem.\n'
+            b'\n'
+            b'So that there\'s enough hidden context.\n'
+            b'\n'
+            b'And dividers so we can reproduce the bug.\n'
+            b'\n'
+            b'Which will a --- line at the end of one file due to the '
+            b'lack of newline,\n'
+            b'causing a parse error.\n'
+            b'\n'
+            b'And here.\n'
+            b'Yes, this is a good README file. Like most README files, '
+            b'this doesn\'t tell youanything you really didn\'t already '
+            b'know.\r')
+
+        new = (
+            b'Test data for a README file.\n'
+            b'\n'
+            b'There\'s a line here.\n'
+            b'Here\'s a change!\n'
+            b'\n'
+            b'A line there.\n'
+            b'\n'
+            b'And a new line here!\n'
+            b'\n'
+            b'We must have several lines to reproduce this problem.\n'
+            b'\n'
+            b'So that there\'s enough hidden context.\n'
+            b'\n'
+            b'And dividers so we can reproduce the bug.\n'
+            b'\n'
+            b'Which will a --- line at the end of one file due to the '
+            b'lack of newline,\n'
+            b'causing a parse error.\n'
+            b'\n'
+            b'And here.\n'
+            b'Yes, this is a good README file. Like most README files, '
+            b'this doesn\'t tell youanything you really didn\'t '
+            b'already know.\n')
+
+        diff = (
+            b'--- README\t2008-02-25 03:40:42.000000000 -0800\n'
+            b'+++ README\t2008-02-25 03:40:55.000000000 -0800\n'
+            b'@@ -1,6 +1,7 @@\n'
+            b' Test data for a README file.\n'
+            b' \n'
+            b' There\'s a line here.\n'
+            b'+Here\'s a change!\n'
+            b' \n'
+            b' A line there.\n'
+            b' \n'
+            b'@@ -16,4 +17,4 @@\n'
+            b' causing a parse error.\n'
+            b' \n'
+            b' And here.\n'
+            b'-Yes, this is a good README file. Like most README files, this '
+            b'doesn\'t tell youanything you really didn\'t already know.\n'
+            b'\\ No newline at end of file\n'
+            b'+Yes, this is a good README file. Like most README files, this '
+            b'doesn\'t tell youanything you really didn\'t already know.\n')
+
         files = diffparser.DiffParser(diff).parse()
-        patched = diffutils.patch(files[0].data, old, new)
+        patched = diffutils.patch(files[0].data, old, 'README')
         self.assertEqual(diff, files[0].data)
         self.assertEqual(patched, new)
 
     def test_move_detection(self):
         """Testing diff viewer move detection"""
-        # movetest1 has two blocks of code that would appear to be moves:
+        # This has two blocks of code that would appear to be moves:
         # a function, and an empty comment block. Only the function should
         # be seen as a move, whereas the empty comment block is less useful
-        # (since it's content-less) and shouldn't be seen as once.
-        old = self._get_file('orig_src', 'movetest1.c')
-        new = self._get_file('new_src', 'movetest1.c')
+        # (since it's content-less) and shouldn't be seen as one.
+        old = (
+            b'/*\n'
+            b' *\n'
+            b' */\n'
+            b'// ----\n'
+            b'\n'
+            b'\n'
+            b'/*\n'
+            b' * Says hello\n'
+            b' */\n'
+            b'void\n'
+            b'say_hello()\n'
+            b'{\n'
+            b'\tprintf("Hello world!\\n");\n'
+            b'}\n'
+            b'\n'
+            b'\n'
+            b'int\n'
+            b'dummy()\n'
+            b'{\n'
+            b'\tif (1) {\n'
+            b'\t\t// whatever\n'
+            b'\t}\n'
+            b'}\n'
+            b'\n'
+            b'\n'
+            b'void\n'
+            b'say_goodbye()\n'
+            b'{\n'
+            b'\tprintf("Goodbye!\\n");\n'
+            b'}\n')
+
+        new = (
+            b'// ----\n'
+            b'\n'
+            b'\n'
+            b'int\n'
+            b'dummy()\n'
+            b'{\n'
+            b'\tif (1) {\n'
+            b'\t\t// whatever\n'
+            b'\t}\n'
+            b'}\n'
+            b'\n'
+            b'\n'
+            b'/*\n'
+            b' * Says goodbye\n'
+            b' */\n'
+            b'void\n'
+            b'say_goodbye()\n'
+            b'{\n'
+            b'\tprintf("Goodbye!\\n");\n'
+            b'}\n'
+            b'\n'
+            b'\n'
+            b'void\n'
+            b'say_hello()\n'
+            b'{\n'
+            b'\tprintf("Hello world!\\n");\n'
+            b'}\n'
+            b'\n'
+            b'\n'
+            b'/*\n'
+            b' *\n'
+            b' */\n')
 
         self._test_move_detection(
             old.splitlines(),
             new.splitlines(),
             [
                 {
-                    28: 15,
-                    29: 16,
-                    30: 17,
-                    31: 18,
+                    23: 10,
+                    24: 11,
+                    25: 12,
+                    26: 13,
                 }
             ],
             [
                 {
-                    15: 28,
-                    16: 29,
-                    17: 30,
-                    18: 31,
+                    10: 23,
+                    11: 24,
+                    12: 25,
+                    13: 26,
                 }
             ])
 
@@ -591,11 +946,6 @@ class DiffParserTest(TestCase):
         self.assertEqual(len(files), 1)
         self.assertEqual(files[0].insert_count, 3)
         self.assertEqual(files[0].delete_count, 4)
-
-    def _get_file(self, *relative):
-        path = os.path.join(*tuple([self.PREFIX] + list(relative)))
-        with open(path, 'rb') as f:
-            return f.read()
 
     def _test_move_detection(self, a, b, expected_i_moves, expected_r_moves):
         differ = MyersDiffer(a, b)
@@ -1050,7 +1400,6 @@ class HighlightRegionTest(TestCase):
 class DbTests(TestCase):
     """Unit tests for database operations."""
     fixtures = ['test_scmtools']
-    PREFIX = os.path.join(os.path.dirname(__file__), 'testdata')
 
     def test_long_filenames(self):
         """Testing using long filenames (1024 characters) in FileDiff."""
@@ -1069,24 +1418,37 @@ class DbTests(TestCase):
         self.assertEquals(filediff.source_file, long_filename)
 
     def test_diff_hashes(self):
-        """
-        Testing that uploading two of the same diff will result in only
-        one database entry.
+        """Testing that uploading two of the same diff will result in only
+        one database entry
         """
         repository = self.create_repository()
         diffset = DiffSet.objects.create(name='test',
                                          revision=1,
                                          repository=repository)
-        with open(os.path.join(self.PREFIX, "diffs", "context",
-                               "foo.c.diff")) as f:
-            data = f.read()
 
-        filediff1 = FileDiff(diff=data,
-                             diffset=diffset)
-        filediff1.save()
-        filediff2 = FileDiff(diff=data,
-                             diffset=diffset)
-        filediff2.save()
+        data = (
+            b'diff -rcN orig_src/foo.c new_src/foo.c\n'
+            b'*** orig_src/foo.c\t2007-01-24 02:11:31.000000000 -0800\n'
+            b'--- new_src/foo.c\t2007-01-24 02:14:42.000000000 -0800\n'
+            b'***************\n'
+            b'*** 1,5 ****\n'
+            b'  int\n'
+            b'  main()\n'
+            b'  {\n'
+            b'! \tprintf("foo\n");\n'
+            b'  }\n'
+            b'--- 1,8 ----\n'
+            b'+ #include <stdio.h>\n'
+            b'+ \n'
+            b'  int\n'
+            b'  main()\n'
+            b'  {\n'
+            b'! \tprintf("foo bar\n");\n'
+            b'! \treturn 0;\n'
+            b'  }\n')
+
+        filediff1 = FileDiff.objects.create(diff=data, diffset=diffset)
+        filediff2 = FileDiff.objects.create(diff=data, diffset=diffset)
 
         self.assertEquals(filediff1.diff_hash, filediff2.diff_hash)
 
@@ -2201,3 +2563,118 @@ class DiffUtilsTests(TestCase):
         new = 'nopqrstuvwxyz'
         regions = diffutils.get_line_changed_regions(old, new)
         deep_equal(regions, (None, None))
+
+    @add_fixtures(['test_users', 'test_scmtools'])
+    def test_headers_use_correct_line_insert(self):
+        """Testing header generation for chunks with insert chunks above"""
+        # We turn off highlighting to compare lines.
+        siteconfig = SiteConfiguration.objects.get_current()
+        siteconfig.set('diffviewer_syntax_highlighting', False)
+        siteconfig.save()
+
+        line_number = 27  # This is a header line below the chunk of inserts
+
+        diff = (b"diff --git a/tests.py b/tests.py\n"
+                b"index a4fc53e..f2414cc 100644\n"
+                b"--- a/tests.py\n"
+                b"+++ b/tests.py\n"
+                b"@@ -20,6 +20,9 @@ from reviewboard.site.urlresolvers import "
+                b"local_site_reverse\n"
+                b" from reviewboard.site.models import LocalSite\n"
+                b" from reviewboard.webapi.errors import INVALID_REPOSITORY\n"
+                b"\n"
+                b"+class Foo(object):\n"
+                b"+    def bar(self):\n"
+                b"+        pass\n"
+                b"\n"
+                b" class BaseWebAPITestCase(TestCase, EmailTestHelper);\n"
+                b"     fixtures = ['test_users', 'test_reviewrequests', 'test_"
+                b"scmtools',\n")
+
+        repository = self.create_repository(tool_name='Git')
+        review_request = self.create_review_request(repository=repository)
+        diffset = self.create_diffset(review_request=review_request)
+
+        filediff = self.create_filediff(
+            diffset=diffset, source_file='tests.py', dest_file='tests.py',
+            source_revision='a4fc53e08863f5341effb5204b77504c120166ae',
+            diff=diff)
+
+        context = {'user': review_request.submitter}
+        header = diffutils.get_last_header_before_line(context, filediff, None,
+                                                       line_number)
+        chunks = diffutils.get_file_chunks_in_range(
+            context, filediff, None, 1,
+            diffutils.get_last_line_number_in_diff(context, filediff, None))
+
+        lines = []
+
+        for chunk in chunks:
+            lines.extend(chunk['lines'])
+
+        # The header we find should be before our line number (which has a
+        # header itself).
+        self.assertTrue(header['right']['line'] < line_number)
+
+        # The line numbers start at 1 and not 0.
+        self.assertEqual(header['right']['text'],
+                         lines[header['right']['line'] - 1][5])
+
+    @add_fixtures(['test_users', 'test_scmtools'])
+    def test_header_correct_line_delete(self):
+        """Testing header generation for chunks with delete chunks above"""
+        # We turn off highlighting to compare lines.
+        siteconfig = SiteConfiguration.objects.get_current()
+        siteconfig.set('diffviewer_syntax_highlighting', False)
+        siteconfig.save()
+
+        line_number = 53  # This is a header line below the chunk of deletes
+
+        diff = (b"diff --git a/tests.py b/tests.py\n"
+                b"index a4fc53e..ba7d34b 100644\n"
+                b"--- a/tests.py\n"
+                b"+++ b/tests.py\n"
+                b"@@ -47,9 +47,6 @@ class BaseWebAPITestCase(TestCase, "
+                b"EmailTestHelper);\n"
+                b"\n"
+                b"         yourself.base_url = 'http;//testserver'\n"
+                b"\n"
+                b"-    def tearDown(yourself);\n"
+                b"-        yourself.client.logout()\n"
+                b"-\n"
+                b"     def api_func_wrapper(yourself, api_func, path, query, "
+                b"expected_status,\n"
+                b"                          follow_redirects, expected_"
+                b"redirects);\n"
+                b"         response = api_func(path, query, follow=follow_"
+                b"redirects)\n")
+
+        repository = self.create_repository(tool_name='Git')
+        review_request = self.create_review_request(repository=repository)
+        diffset = self.create_diffset(review_request=review_request)
+
+        filediff = self.create_filediff(
+            diffset=diffset, source_file='tests.py', dest_file='tests.py',
+            source_revision='a4fc53e08863f5341effb5204b77504c120166ae',
+            diff=diff)
+
+        context = {'user': review_request.submitter}
+        header = diffutils.get_last_header_before_line(context, filediff, None,
+                                                       line_number)
+
+        chunks = diffutils.get_file_chunks_in_range(
+            context, filediff, None, 1,
+            diffutils.get_last_line_number_in_diff(context, filediff, None))
+
+        lines = []
+
+        for chunk in chunks:
+            lines.extend(chunk['lines'])
+
+        # The header we find should be before our line number (which has a
+        # header itself).
+        self.assertTrue(header['left']['line'] < line_number)
+
+        # The line numbers start at 1 and not 0.
+        self.assertEqual(header['left']['text'],
+                         lines[header['left']['line'] - 1][2])
