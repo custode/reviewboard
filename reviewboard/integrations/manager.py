@@ -75,7 +75,7 @@ class IntegrationManager(object):
                            'configured integration' % config_id)
 
     def _toggle_config(self, config_id, is_enabled):
-        """toggle a configured integration
+        """Toggle a configured integration
 
         Update the configured integration object and reregister it
         """
@@ -94,7 +94,7 @@ class IntegrationManager(object):
         self._toggle_config(config_id, True)
 
     def get_integrations(self):
-        """Return all the registered integration"""
+        """Return all registered integrations"""
         return get_integrations()
 
     def get_integration(self, integration_id):
@@ -102,11 +102,11 @@ class IntegrationManager(object):
         return get_integration(integration_id)
 
     def get_config_instances(self):
-        """Return all the configured integration instances"""
+        """Return all configured integration instances"""
         return list(self._config_instances.values())
 
     def get_config_instance(self, config_id):
-        """Return the spefici configured integration instance"""
+        """Return the specfic configured integration instance"""
         return self._config_instances.get(config_id, None)
 
 
