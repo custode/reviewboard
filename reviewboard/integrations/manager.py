@@ -36,7 +36,7 @@ class IntegrationManager(object):
             if config.integration:
                 self._config_instances[config.id] = config
             else:
-                logging.error('Failed to unregister config with id "%s" due '
+                logging.error('Failed to register config with id "%s" due '
                               'to unknown integration "%s"'
                               % (config.id, config.integration_id))
                 raise KeyError('"%s" is not a registered integration class'
