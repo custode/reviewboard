@@ -53,13 +53,11 @@ _integrations = {}
 
 def register_integration(integration):
     """Register a given integration."""
-
     if integration.integration_id in _integrations:
         raise KeyError('"%s" is already a registered integration'
-                       % integration.name)
+                       % integration.integration_id)
 
     _integrations[integration.integration_id] = integration
-
 
 def unregister_integration(integration):
     """Unregister a given integration."""
