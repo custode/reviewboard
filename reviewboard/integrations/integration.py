@@ -59,6 +59,7 @@ def register_integration(integration):
 
     _integrations[integration.integration_id] = integration
 
+
 def unregister_integration(integration):
     """Unregister a given integration."""
 
