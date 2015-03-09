@@ -48,6 +48,7 @@ urlpatterns = patterns(
 
     (r'^admin/extensions/', include('djblets.extensions.urls'),
      {'extension_manager': extension_manager}),
+    (r'^admin/integrations/', include('reviewboard.integrations.urls')),
     (r'^admin/', include('reviewboard.admin.urls')),
 
     url(r'^jsi18n/', 'djblets.util.views.cached_javascript_catalog',
