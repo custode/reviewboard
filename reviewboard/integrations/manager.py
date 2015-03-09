@@ -7,12 +7,10 @@ from reviewboard.integrations.integration import (get_integrations,
 
 from reviewboard.integrations.models import ConfiguredIntegration
 
-
 class IntegrationManager(object):
     """A manager for all integrations."""
     def __init__(self):
         self._config_instances = {}
-        self.start()
 
     def _initialize_configs(self):
         configs = ConfiguredIntegration.objects.all()
@@ -20,7 +18,7 @@ class IntegrationManager(object):
         for config in configs:
             self.register_config(config)
 
-    def start(self):
+    def load(self):
         self._initialize_configs()
 
     def register_config(self, config, reregister=False):

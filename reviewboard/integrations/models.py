@@ -46,4 +46,4 @@ class ConfiguredIntegration(models.Model):
         The integration can be change by an administrator of the global site
         with the proper permission or the administrator of the LocalSite.
         """
-        pass
+        return True
