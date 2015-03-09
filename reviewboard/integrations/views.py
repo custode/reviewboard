@@ -20,7 +20,7 @@ def integration_list(request,
             # Reload both extension manager and integration manager
             return HttpResponseRedirect('.')
     else:
-        manager.load()
+        # manager.load()
         return render_to_response(template_name, RequestContext(request))
 
 
