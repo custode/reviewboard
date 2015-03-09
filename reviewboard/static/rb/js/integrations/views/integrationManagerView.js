@@ -1,4 +1,5 @@
 /*
+Provide the view for each integration
 */
 IntegrationView = Backbone.View.extend({
   className: 'integration',
@@ -15,6 +16,7 @@ IntegrationView = Backbone.View.extend({
 });
 
 /*
+Provide the view to manage all the integrations
 */
 IntegrationManagerView = Backbone.View.extend({
   initialize: function() {
@@ -38,7 +40,6 @@ IntegrationManagerView = Backbone.View.extend({
       });
 
       this._$integrations.append(view.$el);
-      // odd or even, enable or not enable
       view.render();
 
       this._$integrations.appendTo(this.$el);
