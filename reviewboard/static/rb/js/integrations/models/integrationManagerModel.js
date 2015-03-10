@@ -3,6 +3,20 @@ This represent an integration model
 */
 Integration = Backbone.Model.extend({
   defaults: {
+    name: null,
+    description: null,
+    iconPath: null
+  },
+
+  parse: function(rsp) {
+    return {
+      name: rsp.name,
+      description: rsp.description,
+      iconPath: rsp.icon_path
+    };
+  }
+});
+
 /*
 This represent an configured integration model
 */
@@ -28,6 +42,18 @@ ConfiguredIntegration = Backbone.Model.extend({
   }
 });
 
+IntegrationCollection = Backbone.Collection.extend({
+  model: Integration,
+
+  url: function() {
+    return SITE_ROOT + 'api/integrations/';
+  },
+
+  parse: function(rsp) {
+    return rsp.integrations;
+  }
+});
+
 ConfiguredIntegrationCollection = Backbone.Collection.extend({
   model: ConfiguredIntegration,
 
@@ -37,6 +63,20 @@ ConfiguredIntegrationCollection = Backbone.Collection.extend({
 
   parse: function(rsp) {
     return rsp.configured_integrations;
+  }
+});
+
+IntegrationManager = Backbone.Model.extend({
+  initialize: function() {
+    this.integrations = new IntegrationCollection();
+  },
+
+  load: function() {
+    this.integration.fetch({
+      success: _.bind(function() {
+        this.trigger('loaded');
+      }, this)
+    });
   }
 });
 
