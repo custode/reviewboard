@@ -9,8 +9,28 @@ IntegrationView = Backbone.View.extend({
 
   },
 
+/*
+Provide the view for each configured integration
+*/
+ConfiguredIntegrationView = Backbone.View.extend({
+  className: 'configured-integration',
+  tagName: 'li',
+
+  events: {
+
+  },
+
+  template: _.template([
+    '<div class="configured-integration">',
+    '<h1><%- integration %></h1>',
+    'Enabled: <%- enabled %>',
+    'Description: <%- description %>',
+    'Configuration: <%- configuration %>',
+    '</div>'
+  ].join('')),
+
   render: function() {
-    this.$el.html(this.integrationTemplate());
+    this.$el.html(this.template(this.model.attributes));
   }
 
 });
@@ -18,13 +38,13 @@ IntegrationView = Backbone.View.extend({
 /*
 Provide the view to manage all the integrations
 */
-IntegrationManagerView = Backbone.View.extend({
+ConfiguredIntegrationManagerView = Backbone.View.extend({
   initialize: function() {
-    this._$integrations = null;
+    this._$configuredIntegrations = null;
   },
 
   render: function() {
-    this._$integrations = this.$('.integrations');
+    this._$configuredIntegrations = this.$('.configured-integrations');
 
     this.listenTo(this.model, 'loaded', this._onLoaded);
 
@@ -34,15 +54,15 @@ IntegrationManagerView = Backbone.View.extend({
   },
 
   _onLoaded: function() {
-    this.model.integrations.each(function(integration) {
-      var view = new IntegrationView({
-        model: integration
+    this.model.configuredIntegrations.each(function(configuredIntegration) {
+      var view = new ConfiguredIntegrationView({
+        model: configuredIntegration
       });
 
-      this._$integrations.append(view.$el);
+      this._$configuredIntegrations.append(view.$el);
       view.render();
 
-      this._$integrations.appendTo(this.$el);
+      this._$configuredIntegrations.appendTo(this.$el);
     }, this);
   }
 
