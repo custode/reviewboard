@@ -13,6 +13,7 @@ class Integration(object):
 
     integration_id = None
     name = None
+    description = None
     allows_localsites = False
     supports_repositories = False
     needs_authentication = False
