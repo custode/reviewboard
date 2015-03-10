@@ -13,6 +13,7 @@ class Integration(object):
 
     integration_id = None
     name = None
+    description = None
     allows_localsites = False
     supports_repositories = False
     needs_authentication = False
@@ -53,10 +54,9 @@ _integrations = {}
 
 def register_integration(integration):
     """Register a given integration."""
-
     if integration.integration_id in _integrations:
         raise KeyError('"%s" is already a registered integration'
-                       % integration.name)
+                       % integration.integration_id)
 
     _integrations[integration.integration_id] = integration
 
