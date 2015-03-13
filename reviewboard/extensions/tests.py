@@ -25,6 +25,9 @@ from reviewboard.extensions.hooks import (AdminWidgetHook,
                                           WebAPICapabilitiesHook)
 from reviewboard.hostingsvcs.service import (get_hosting_service,
                                              HostingService)
+from reviewboard.integrations.integration import (Integration,
+                                                  get_integration,
+                                                  get_integrations)
 from reviewboard.testing.testcase import TestCase
 from reviewboard.reviews.models.review_request import ReviewRequest
 from reviewboard.reviews.fields import (BaseReviewRequestField,
@@ -32,9 +35,6 @@ from reviewboard.reviews.fields import (BaseReviewRequestField,
 from reviewboard.webapi.tests.base import BaseWebAPITestCase
 from reviewboard.webapi.tests.mimetypes import root_item_mimetype
 from reviewboard.webapi.tests.urls import get_root_url
-from reviewboard.integrations.integration import (Integration,
-                                                  get_integration,
-                                                  get_integrations)
 
 
 class DummyExtension(Extension):
