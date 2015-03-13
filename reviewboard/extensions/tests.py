@@ -16,15 +16,18 @@ from reviewboard.extensions.hooks import (AdminWidgetHook,
                                           HeaderActionHook,
                                           HeaderDropdownActionHook,
                                           HostingServiceHook,
+                                          IntegrationHook,
                                           NavigationBarHook,
                                           ReviewRequestActionHook,
                                           ReviewRequestApprovalHook,
                                           ReviewRequestDropdownActionHook,
                                           ReviewRequestFieldSetsHook,
-                                          WebAPICapabilitiesHook,
-                                          IntegrationHook)
+                                          WebAPICapabilitiesHook)
 from reviewboard.hostingsvcs.service import (get_hosting_service,
                                              HostingService)
+from reviewboard.integrations.integration import (Integration,
+                                                  get_integration,
+                                                  get_integrations)
 from reviewboard.testing.testcase import TestCase
 from reviewboard.reviews.models.review_request import ReviewRequest
 from reviewboard.reviews.fields import (BaseReviewRequestField,
@@ -32,8 +35,6 @@ from reviewboard.reviews.fields import (BaseReviewRequestField,
 from reviewboard.webapi.tests.base import BaseWebAPITestCase
 from reviewboard.webapi.tests.mimetypes import root_item_mimetype
 from reviewboard.webapi.tests.urls import get_root_url
-from reviewboard.integrations.integration import (Integration,
-                                                  _integrations)
 
 
 class DummyExtension(Extension):
@@ -225,13 +226,13 @@ class HostingServiceHookTests(TestCase):
         self.extension.shutdown()
 
     def test_register(self):
-        """Testing HostingServiceHook initializing"""
+        """Testing HostingServiceHook registration"""
         HostingServiceHook(extension=self.extension, service_cls=TestService)
 
         self.assertNotEqual(None, get_hosting_service(TestService.name))
 
     def test_unregister(self):
-        """Testing HostingServiceHook uninitializing"""
+        """Testing HostingServiceHook unregistration"""
         hook = HostingServiceHook(extension=self.extension,
                                   service_cls=TestService)
 
@@ -445,16 +446,16 @@ class IntegrationHookTest(TestCase):
         """Testing IntegrationHook initializing"""
         IntegrationHook(self.extension, TestIntegration)
 
-        self.assertIn(TestIntegration.integration_id, _integrations)
+        self.assertIn(TestIntegration, get_integrations())
         self.assertEqual(TestIntegration,
-                         _integrations[TestIntegration.integration_id])
+                         get_integration(TestIntegration.integration_id))
 
     def test_unregister(self):
         """Testing IntegrationHook unitializing"""
         hook = IntegrationHook(self.extension, TestIntegration)
 
         hook.shutdown()
-        self.assertNotIn(TestIntegration.integration_id, _integrations)
+        self.assertNotIn(TestIntegration, get_integrations())
 
 
 class ReviewRequestApprovalTestHook(ReviewRequestApprovalHook):

@@ -11,21 +11,53 @@ class Integration(object):
     and shutting down of the integration.
     """
 
+    # The unique identifier of the integration.
+    #
+    # This identifier will be use in retrieving and registering of the
+    # integration, and thus will have to be unique among the integrations.
     integration_id = None
+
+    # The display name of the integration.
     name = None
+
+    # A short description on the functionalities of the integration.
     description = None
+
+    # Flag is set to True if the integration allow LocalSite configuration.
+    #
+    # If this is set to False, the services provided by the integration will be
+    # global, and no LocalSite configuration will be allowed.
     allows_localsites = False
+
+    # Flag is set to True if the integration support repositories.
     supports_repositories = False
+
+    # Flag is set to True if the integration needs authentication.
     needs_authentication = False
 
+    # The path for the icon file of the integration.
+    #
+    # The icon file should be placed in the "static" folder within the
+    # extension package. The given path will then be the relative path of the
+    # icon within the "static" folder.
     icon_path = None
+
+    # The form class of the integration.
+    #
+    # The given form class should be a subclass of the
+    # IntegrationSettingsForm.
     form = None
+
+    # The config template for the integration.
+    #
+    # The given template should extends IntegrationConfigTemplate.
     config_template = None
 
     def __init__(self, config):
         if not self.integration_id:
             self.integration_id = ".".join(
                 [self.__module__, self.__class__.__name__])
+
         self.config = config
 
         self.initialize()
@@ -46,8 +78,9 @@ class Integration(object):
         raise NotImplementedError
 
     def get_authentication_url(self):
-        """Return the authentication url for the integration."""
+        """Returns the authentication URL for the integration."""
         raise NotImplementedError
+
 
 _integrations = {}
 
@@ -63,7 +96,6 @@ def register_integration(integration):
 
 def unregister_integration(integration):
     """Unregister a given integration."""
-
     try:
         del _integrations[integration.integration_id]
     except KeyError:
@@ -74,10 +106,10 @@ def unregister_integration(integration):
 
 
 def get_integrations():
-    """Gets the list of integrations."""
+    """Returns the list of integrations."""
     return list(_integrations.values())
 
 
 def get_integration(integration_id):
-    """Retrieves the integration with the given integration id"""
+    """Returns the integration with the given integration ID."""
     return _integrations.get(integration_id, None)

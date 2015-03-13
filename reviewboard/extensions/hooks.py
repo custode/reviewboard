@@ -548,7 +548,7 @@ class UserPageSidebarItemsHook(DataGridSidebarItemsHook):
 
 @six.add_metaclass(ExtensionHookPoint)
 class IntegrationHook(ExtensionHook):
-    """This hook allows adding integration provided by an extensions."""
+    """Allows extensions to register and unregister service integrations."""
 
     def __init__(self, extension, integration):
         super(IntegrationHook, self).__init__(extension)
@@ -558,6 +558,7 @@ class IntegrationHook(ExtensionHook):
     def shutdown(self):
         super(IntegrationHook, self).shutdown()
         unregister_integration(self.integration)
+
 
 __all__ = [
     'AccountPageFormsHook',
@@ -576,6 +577,7 @@ __all__ = [
     'HeaderActionHook',
     'HeaderDropdownActionHook',
     'HostingServiceHook',
+    'IntegrationHook',
     'NavigationBarHook',
     'ReviewRequestActionHook',
     'ReviewRequestApprovalHook',
@@ -588,5 +590,4 @@ __all__ = [
     'URLHook',
     'UserPageSidebarItemsHook',
     'WebAPICapabilitiesHook',
-    'IntegrationHook',
 ]
