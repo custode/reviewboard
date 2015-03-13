@@ -72,7 +72,7 @@ class IntegrationManager(object):
         return get_integrations()
 
     def get_integration(self, integration_id):
-        """Return the specific integration."""
+        """Returns the specific integration."""
         return get_integration(integration_id)
 
     def get_config_instances(self):
@@ -80,7 +80,7 @@ class IntegrationManager(object):
         return list(itervalues(self._config_instances))
 
     def get_config_instance(self, config_id):
-        """Return the specfic configured integration instance."""
+        """Returns the specfic configured integration instance."""
         return self._config_instances.get(config_id, None)
 
     def _initialize_configs(self):
@@ -103,7 +103,7 @@ _integration_manager = None
 
 
 def get_integration_manager():
-    """Return the integration manager.
+    """Returns the integration manager.
 
     Instead of creating an integration manager directly, this method should be
     called to ensure that there is only one instance of the manager.

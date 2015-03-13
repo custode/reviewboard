@@ -78,7 +78,7 @@ class Integration(object):
         raise NotImplementedError
 
     def get_authentication_url(self):
-        """Return the authentication URL for the integration."""
+        """Returns the authentication URL for the integration."""
         raise NotImplementedError
 
 
