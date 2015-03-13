@@ -44,7 +44,7 @@ class Integration(object):
 
     # The form class of the integration.
     #
-    # The given form class should be a set class of the
+    # The given form class should be a subclass of the
     # IntegrationSettingsForm.
     form = None
 
@@ -106,7 +106,7 @@ def unregister_integration(integration):
 
 
 def get_integrations():
-    """Return the list of integrations."""
+    """Returns the list of integrations."""
     return list(_integrations.values())
 
 
