@@ -27,7 +27,7 @@ class IntegrationManager(object):
             raise KeyError('This configuration is already registered.')
         else:
             if config.integration:
-                self._config_instances[config.id] = config
+                self._config_instances[config.pk] = config
 
     def unregister_config(self, config_id):
         """Unregister the configured integration.
@@ -38,11 +38,10 @@ class IntegrationManager(object):
         config_instance = self.get_config_instance(config_id)
 
         try:
-            del self._config_instances[config_instance.id]
+            del self._config_instances[config_instance.pk]
         except KeyError:
             config_instance.integration.shutdown()
-            raise KeyError('config with id "%s" is not a registered '
-                           'configured integration' % config_id)
+            raise KeyError('This configuration is not registered.')
 
     def update_config(self, config_id):
         """Update the configured integration."""
@@ -58,8 +57,7 @@ class IntegrationManager(object):
             self.unregister_config(config_id)
             ConfiguredIntegration.objects.filter(pk=config_id).delete()
         else:
-            raise KeyError('config with id "%s" is not a registered '
-                           'configured integration' % config_id)
+            raise KeyError('This configuration is not registered.')
 
     def disable_config(self, config_id):
         """Disable a configured integration."""
