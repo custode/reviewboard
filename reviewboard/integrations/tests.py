@@ -11,6 +11,9 @@ from reviewboard.testing.testcase import TestCase
 class TestIntegration(Integration):
     integration_id = 'TestIntegration'
 
+    def shutdown(self):
+        pass
+
 
 class IntegrationManagerTest(TestCase):
     """Testing Integration Manager."""
