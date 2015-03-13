@@ -34,8 +34,7 @@ class IntegrationManagerTest(TestCase):
             is_enabled=is_enabled,
             configuration={},
             description=description,
-            local_site=local_site
-            )
+            local_site=local_site)
 
     def setUp(self):
         register_integration(TestIntegration)
