@@ -23,16 +23,16 @@ class Integration(object):
     # A short description on the functionalities of the integration.
     description = None
 
-    # A flag that describe whether the integration is global.
+    # Flag is set to True if the integration allow LocalSite configuration.
     #
-    # If this is set to True, the services provided by the integration will be
+    # If this is set to False, the services provided by the integration will be
     # global, and no LocalSite configuration will be allowed.
     allows_localsites = False
 
-    # A flag that describe whether the integrations support repositories.
+    # Flag is set to True if the integration support repositories.
     supports_repositories = False
 
-    # A flag that describe whether the integration has to be authenticated.
+    # Flag is set to True if the integration needs authentication.
     needs_authentication = False
 
     # The path for the icon file of the integration.
