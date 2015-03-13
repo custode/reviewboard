@@ -39,9 +39,11 @@ class IntegrationManager(object):
 
         try:
             del self._config_instances[config_instance.pk]
-        except KeyError:
-            config_instance.integration.shutdown()
+        except (KeyError, AttributeError):
             raise KeyError('This configuration is not registered.')
+
+        if config_instance.integration:
+            config_instance.integration.shutdown()
 
     def update_config(self, config_id):
         """Update the configured integration."""
