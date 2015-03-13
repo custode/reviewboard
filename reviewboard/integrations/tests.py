@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
 
-from djblets.testing.decorators import add_fixtures
-
 from reviewboard.testing.testcase import TestCase
 from reviewboard.integrations.models import ConfiguredIntegration
 from reviewboard.integrations.integration import (Integration,
-                                                  _integrations)
+                                                  register_integration,
+                                                  unregister_integration)
 from reviewboard.integrations.manager import IntegrationManager
 
 
@@ -16,15 +15,42 @@ class TestIntegration(Integration):
 class IntegrationManagerTest(TestCase):
     """Testing Integration Manager"""
 
+    def create_configured_integration(self, integration_id="TestIntegration",
+                                      is_enabled=False,
+                                      configuration={},
+                                      description="Test description",
+                                      local_site=None):
+        """Creates a configured integration for testing.
+
+        The configured integration is populated with the default data that can
+        be overridden by the caller. It may optionally be attached to a
+        LocalSite.
+        """
+        return ConfiguredIntegration.objects.create(
+            integration_id=integration_id,
+            is_enabled=is_enabled,
+            configuration={},
+            description=description,
+            local_site=local_site
+            )
+
     def setUp(self):
-        _integrations['TestIntegration'] = TestIntegration
+        register_integration(TestIntegration)
         self.manager = IntegrationManager()
 
-    @add_fixtures(['test_configs'])
+    def tearDown(self):
+        super(IntegrationManagerTest, self).tearDown()
+        unregister_integration(TestIntegration)
+
     def test_start_with_existing_configs(self):
         """
         Testing integration manager initializing with existing configured
         integrations"""
+        config1 = self.create_configured_integration()
+        config2 = self.create_configured_integration(is_enabled=True)
+        self.manager.register_config(config1)
+        self.manager.register_config(config2)
+
         configs = self.manager.get_config_instances()
         config = ConfiguredIntegration.objects.get(pk=1)
 
@@ -39,37 +65,43 @@ class IntegrationManagerTest(TestCase):
         configs = self.manager.get_config_instances()
         self.assertEqual(len(configs), 0)
 
-    @add_fixtures(['test_configs'])
     def test_register_duplicate_config(self):
         """
         Testing integration manager registering duplicate configured
         integration
         """
-        config = ConfiguredIntegration.objects.get(pk=1)
-        self.assertRaises(KeyError, self.manager.register_config, config)
+        config1 = self.create_configured_integration()
+        self.manager.register_config(config1)
 
-    @add_fixtures(['test_configs'])
+        self.assertRaises(KeyError, self.manager.register_config, config1)
+
     def test_register_duplicate_config_with_reregister(self):
         """
         Testing integration manager updating registered configured integration
         """
+        config1 = self.create_configured_integration()
+        config2 = self.create_configured_integration(is_enabled=True)
+        self.manager.register_config(config1)
+        self.manager.register_config(config2)
         self.manager.update_config(1)
 
         self.assertEqual(len(self.manager.get_config_instances()), 2)
 
-    @add_fixtures(['test_configs'])
     def test_unregister_exisiting_config(self):
         """
         Testing integration manager unregistering registered configured
         integration
         """
-        config = ConfiguredIntegration.objects.get(pk=1)
+        config1 = self.create_configured_integration()
+        config2 = self.create_configured_integration(is_enabled=True)
+        self.manager.register_config(config1)
+        self.manager.register_config(config2)
+
         self.manager.unregister_config(1)
 
         self.assertEqual(len(self.manager.get_config_instances()), 1)
-        self.assertNotIn(config, self.manager.get_config_instances())
+        self.assertNotIn(config1, self.manager.get_config_instances())
 
-    @add_fixtures(['test_configs'])
     def test_unregister_non_existent_config(self):
         """
         Testing integration manager unregistering nonexistent configured
@@ -77,9 +109,11 @@ class IntegrationManagerTest(TestCase):
         """
         self.assertRaises(KeyError, self.manager.unregister_config, 3)
 
-    @add_fixtures(['test_configs'])
     def test_toggle_config(self):
         """Testing integration manager toggling of configured integration"""
+
+        config1 = self.create_configured_integration()
+        self.manager.register_config(config1)
 
         config = ConfiguredIntegration.objects.get(pk=1)
         self.assertFalse(config.is_enabled)
