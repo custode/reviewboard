@@ -3,16 +3,20 @@ This represent an integration model
 */
 Integration = Backbone.Model.extend({
   defaults: {
+    integrationID: null,
     name: null,
     description: null,
-    iconPath: null
+    iconPath: null,
+    newLink: null
   },
 
   parse: function(rsp) {
     return {
+      integrationID: rsp.integration_id,
       name: rsp.name,
       description: rsp.description,
-      iconPath: rsp.icon_path
+      iconPath: rsp.icon_path,
+      newLink: rsp.new_link
     };
   }
 });
@@ -23,7 +27,10 @@ This represent an configured integration model
 ConfiguredIntegration = Backbone.Model.extend({
   defaults: {
     id: null,
+    name: null,
     integration: null,
+    integrationDescription: null,
+    integrationIcon: null,
     enabled: null,
     configuration: null
   },
@@ -35,7 +42,11 @@ ConfiguredIntegration = Backbone.Model.extend({
   parse: function(rsp) {
     return {
       id: rsp.id,
+      name: rsp.name,
       integration: rsp.integration_id,
+      integrationDescription: rsp.integration_description,
+      integrationIcon: rsp.integration_icon,
+      description: rsp.description,
       enabled: rsp.is_enabled,
       configuration: rsp.configuration
     };
@@ -72,7 +83,7 @@ IntegrationManager = Backbone.Model.extend({
   },
 
   load: function() {
-    this.integration.fetch({
+    this.integrations.fetch({
       success: _.bind(function() {
         this.trigger('loaded');
       }, this)
