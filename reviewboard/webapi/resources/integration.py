@@ -1,15 +1,18 @@
 from __future__ import unicode_literals
 
-from djblets.util.decorators import augment_method_from
 from djblets.webapi.decorators import webapi_login_required
 from djblets.webapi.core import WebAPIResponse
 
-from reviewboard.webapi.base import WebAPIResource
-from reviewboard.integrations.models import ConfiguredIntegration
+from django.core.urlresolvers import reverse
+from django.contrib.staticfiles.templatetags.staticfiles import static
+
 from reviewboard.integrations.manager import get_integration_manager
+from reviewboard.webapi.base import WebAPIResource
 
 
 class IntegrationResource(WebAPIResource):
+    """Provides information on Integration resources."""
+
     name = 'integration'
 
     fields = {
@@ -36,17 +39,12 @@ class IntegrationResource(WebAPIResource):
         },
         'icon_path': {
             'type': str,
-            'description': 'The url for the icon'
+            'description': 'The url for the icon.'
         },
-        'form': {
+        'new_link': {
             'type': str,
-            'description': 'The default form for the integration'
-        },
-        'config_template': {
-            'type': str,
-            'description': 'The template for the configuration page of the\
-                            integration'
-        },
+            'description': "The url for adding new integration."
+        }
     }
 
     allowed_methods = ('GET')
@@ -54,6 +52,20 @@ class IntegrationResource(WebAPIResource):
     def __init__(self, integration_manager):
         super(IntegrationResource, self).__init__()
         self._integration_manager = integration_manager
+
+    def serialize_icon_path_field(self, integration, *args, **kwargs):
+        if not integration.extension or not integration.icon_path:
+            return None
+        else:
+            return static('ext/%s/%s' % (integration.extension.id,
+                                         integration.icon_path))
+
+    def serialize_new_link_field(self, integration, *args, **kwargs):
+        if not integration:
+            return None
+        else:
+            return reverse('new-integration',
+                           args=(integration.integration_id,))
 
     def has_access_permissions(self, *args, **kwargs):
         return True
