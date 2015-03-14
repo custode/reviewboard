@@ -75,7 +75,9 @@ class IntegrationResource(WebAPIResource):
 
     @webapi_login_required
     def get_list(self, request, *args, **kwargs):
-        data = list(map(lambda obj: self.serialize_object(obj, request=request), self._integration_manager.get_integrations()))
+        data = list(map(lambda obj:
+                        self.serialize_object(obj, request=request),
+                        self._integration_manager.get_integrations()))
 
         return WebAPIResponse(request, {'integrations': data})
 
