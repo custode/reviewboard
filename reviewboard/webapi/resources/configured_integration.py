@@ -21,13 +21,25 @@ class ConfiguredIntegrationResource(WebAPIResource):
             'type': int,
             'description': 'The numeric ID of the integration.'
         },
+        'name': {
+            'type': str,
+            'description': 'The name of the integration this resource belongs.'
+        },
+        'integration_description': {
+            'type': str,
+            'description': 'The description of the integration class.'
+        },
         'integration_id': {
             'type': str,
             'description': 'The integration type that the resource belongs to.'
         },
+        'integration_icon': {
+            'type': str,
+            'description': 'The icon path for the integration.'
+        },
         'description': {
             'type': str,
-            'description': 'The description of the integration.'
+            'description': 'Optional description for this resource.'
         },
         'is_enabled': {
             'type': bool,
@@ -48,6 +60,25 @@ class ConfiguredIntegrationResource(WebAPIResource):
     def __init__(self, integration_manager):
         super(ConfiguredIntegrationResource, self).__init__()
         self._integration_manager = integration_manager
+
+    def serialize_name_field(self, config, *args, **kwargs):
+        if not config or not config.integration:
+            return None
+        else:
+            return config.integration.name
+
+    def serialize_integration_description_field(self, config, *args, **kwargs):
+        if not config or not config.integration:
+            return None
+        else:
+            return config.integration.description
+
+    def serialize_integration_icon_field(self, config, *args, **kwargs):
+        if not config or not config.integration:
+            return None
+        else:
+            return static('ext/%s/%s' % (config.integration.extension.id,
+                                         config.integration.icon_path))
 
     def has_access_permissions(self, *args, **kwargs):
         return True
