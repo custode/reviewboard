@@ -45,15 +45,12 @@ class ConfiguredIntegrationResource(WebAPIResource):
             'type': bool,
             'description': 'Whether or not the integration is enabled.'
         },
-        # TODO: Need to pretty format it with the template
         'configuration': {
             'type': str,
             'description': 'The configuration of the integration.'
         },
     }
 
-    # Name clash with one of the attribute
-    # Link to the attribute name in the url
     uri_object_key = 'integration_id'
     allowed_methods = ('GET', 'PUT')
 
