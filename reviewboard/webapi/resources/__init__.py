@@ -18,6 +18,7 @@ from reviewboard.reviews.models import (Comment, DefaultReviewer,
                                         ScreenshotComment, Screenshot,
                                         FileAttachmentComment)
 from reviewboard.integrations.models import ConfiguredIntegration
+from reviewboard.integrations.integration import Integration
 from reviewboard.scmtools.models import Repository
 from reviewboard.webapi.base import WebAPIResource
 from reviewboard.webapi.models import WebAPIToken
@@ -109,7 +110,9 @@ class Resources(object):
                          self.review_file_attachment_comment))
         register_resource_for_model(User, self.user)
         register_resource_for_model(WebAPIToken, self.api_token)
-        register_resource_for_model(ConfiguredIntegration, self.integration)
+        register_resource_for_model(ConfiguredIntegration,
+                                    self.configured_integration),
+        register_resource_for_model(Integration, self.integration)
 
 resources = Resources()
 
