@@ -26,10 +26,12 @@ class RootResource(WebAPIResource, DjbletsRootResource):
 
     def __init__(self, *args, **kwargs):
         super(RootResource, self).__init__([
+            resources.configured_integration,
             resources.default_reviewer,
             resources.extension,
             resources.hosting_service,
             resources.hosting_service_account,
+            resources.integration,
             resources.repository,
             resources.review_group,
             resources.review_request,
@@ -38,7 +40,6 @@ class RootResource(WebAPIResource, DjbletsRootResource):
             resources.session,
             resources.user,
             resources.validation,
-            resources.integration,
         ], *args, **kwargs)
 
     @webapi_check_login_required
