@@ -6,8 +6,57 @@ IntegrationView = Backbone.View.extend({
   tagName: 'li',
 
   events: {
-
+    'click .manage-integration': '_toggleManage',
+    'click .add-new': '_addNewIntegration'
   },
+
+  template: _.template([
+    '<img class="integration-icon" src="<%-iconPath%>">',
+    '<div class="integration-header">',
+    ' <div class="integration-content"><h1><%- name %></h1>',
+    ' <div class="description"><%- description %></div>',
+    ' <ul class="add">',
+    '   <li><a href="#" class="manage-integration">Manage</a></li>',
+    ' </ul></div>',
+    '</div>',
+    '<ul class="configured-integrations">',
+    ' <li class="configured-integration">',
+    '   <div class="configured-header">',
+    '     <div class="description">Add new <%- name %></div>',
+    '     <ul class="options">',
+    '       <li><a href="<%- newLink %>" class="add-new">Add</a></li>',
+    '     </ul>',
+    '   </div>',
+    '  </li>',
+    '</ul>'
+  ].join('')),
+
+  initialize: function() {
+    this._$configuredIntegrationsView = null;
+  },
+
+  render: function() {
+    this.$el.html(this.template(this.model.attributes));
+  },
+
+  _toggleManage: function() {
+    if (this._$configuredIntegrationsView === null) {
+      this._loadConfiguredIntegrations();
+    }
+
+    this.$('.configured-integrations').toggle('fast');
+  },
+
+  _loadConfiguredIntegrations: function() {
+    this._$configuredIntegrationsView = new ConfiguredIntegrationManagerView({
+      el: this.$el,
+      name: this.model.name,
+      model: new ConfiguredIntegrationManager()
+    });
+
+    this._$configuredIntegrationsView.render();
+  }
+});
 
 /*
 Provide the view for each configured integration
@@ -17,22 +66,77 @@ ConfiguredIntegrationView = Backbone.View.extend({
   tagName: 'li',
 
   events: {
-
+    'click .configure-integration': '_configureIntegration',
+    'click .enable-toggle': '_toggleEnableState'
   },
 
   template: _.template([
-    '<div class="configured-integration">',
-    '<h1><%- integration %></h1>',
-    'Enabled: <%- enabled %>',
-    'Description: <%- description %>',
-    'Configuration: <%- configuration %>',
+    '<div class="configured-header">',
+    ' <div class="description"><%- description %></div>',
+    ' <ul class="options">',
+    '   <li class="option"><a href="#" class="enable-toggle"></a></li>',
+    '   <li class="option">',
+    '     <a href="<%- configureLink %>" class="configure-integration">',
+    '        Configure',
+    '     </a>',
+    '   </li>',
+    ' </ul>',
     '</div>'
   ].join('')),
 
   render: function() {
     this.$el.html(this.template(this.model.attributes));
-  }
 
+    this._$enableToggle = this.$('.enable-toggle');
+    this.listenTo(this.model, 'change:enabled', this._showEnabledState);
+    this._showEnabledState();
+  },
+
+  _showEnabledState: function() {
+    var enabled = this.model.get('enabled');
+
+    this._$enableToggle
+      .text(enabled ? gettext('Disable') : gettext('Enable'));
+  },
+
+  _toggleEnableState: function() {
+    if (this.model.get('enabled')) {
+      this.model.disable();
+    } else {
+      this.model.enable();
+    }
+
+    return false;
+  }
+});
+
+/*
+*/
+IntegrationManagerView = Backbone.View.extend({
+  initialize: function() {
+    this._$integrations = null;
+  },
+
+  render: function() {
+    this._$integrations = this.$('.integrations');
+
+    this.listenTo(this.model, 'loaded', this._onLoaded);
+
+    this.model.load();
+
+    return this;
+  },
+
+  _onLoaded: function() {
+    this.model.integrations.each(function(integration) {
+      var view = new IntegrationView({
+        model: integration
+      });
+
+      this._$integrations.append(view.$el);
+      view.render();
+    }, this);
+  }
 });
 
 /*
@@ -59,11 +163,8 @@ ConfiguredIntegrationManagerView = Backbone.View.extend({
         model: configuredIntegration
       });
 
-      this._$configuredIntegrations.append(view.$el);
+      this._$configuredIntegrations.prepend(view.$el);
       view.render();
-
-      this._$configuredIntegrations.appendTo(this.$el);
     }, this);
   }
-
 });
