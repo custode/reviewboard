@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.urlresolvers import reverse
 
 from djblets.util.decorators import augment_method_from
-from djblets.webapi.decorators import webapi_login_required
+from djblets.webapi.decorators import (webapi_login_required,
+                                       webapi_request_fields)
+from djblets.webapi.errors import DOES_NOT_EXIST
 
 from reviewboard.integrations.models import ConfiguredIntegration
 from reviewboard.integrations.manager import get_integration_manager
@@ -49,10 +52,14 @@ class ConfiguredIntegrationResource(WebAPIResource):
             'type': str,
             'description': 'The configuration of the integration.'
         },
+        'configure_link': {
+            'type': str,
+            'description': 'The URL for configurating this resource'
+        }
     }
 
     uri_object_key = 'integration_id'
-    allowed_methods = ('GET', 'PUT')
+    allowed_methods = ('GET', 'PUT', 'DELETE')
 
     def __init__(self, integration_manager):
         super(ConfiguredIntegrationResource, self).__init__()
@@ -76,6 +83,12 @@ class ConfiguredIntegrationResource(WebAPIResource):
         else:
             return static('ext/%s/%s' % (config.integration.extension.id,
                                          config.integration.icon_path))
+
+    def serialize_configure_link_field(self, config, *args, **kwargs):
+        if not config:
+            return None
+        else:
+            return reverse('configure-integration', args=(config.pk,))
 
     def has_access_permissions(self, *args, **kwargs):
         return True
@@ -108,6 +121,37 @@ class ConfiguredIntegrationResource(WebAPIResource):
     @augment_method_from(WebAPIResource)
     def get_list(self, request, *args, **kwargs):
         pass
+
+    @webapi_login_required
+    @webapi_request_fields(
+        required={
+            'enabled': {
+                'type': bool,
+                'description': 'Whether or not to make the extension active.'
+            },
+        },
+    )
+    def update(self, request, *args, **kwargs):
+        """Update the state of the ConfiguredIntegration.
+
+        This will enable or disable the ConfiguredIntegration instance
+        with the initilize or shutdown method from the Integration class.
+        """
+        try:
+            config = self.get_object(request, *args, **kwargs)
+        except:
+            return DOES_NOT_EXIST
+
+        if kwargs.get('enabled'):
+            self._integration_manager.enable_config(config.pk)
+        else:
+            self._integration_manager.disable_config(config.pk)
+
+        config = ConfiguredIntegration.objects.get(pk=config.pk)
+
+        return 200, {
+            self.item_result_key: config
+        }
 
 
 configured_integration_resource = ConfiguredIntegrationResource(
