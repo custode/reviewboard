@@ -11,23 +11,15 @@ IntegrationView = Backbone.View.extend({
   },
 
   template: _.template([
-    '<img class="integration-icon" src="<%-iconPath%>">',
     '<div class="integration-header">',
+    '<img class="integration-icon" src="<%-iconPath%>">',
     ' <div class="integration-content"><h1><%- name %></h1>',
     ' <div class="description"><%- description %></div>',
     ' <ul class="expand">',
-    '   <li class="manage-integration"><a href="#"><div class="arrow right"></div></a></li>',
+    '   <li class="manage-integration"><a href="#">Add</a></li>',
     ' </ul></div>',
     '</div>',
     '<ul class="configured-integrations">',
-    ' <li class="configured-integration disabled">',
-    '   <div class="configured-header">',
-    '     <div class="description">Add new <%- name %></div>',
-    '     <ul class="options">',
-    '       <li><a href="<%- newLink %>" class="add-new">Add</a></li>',
-    '     </ul>',
-    '   </div>',
-    '  </li>',
     '</ul>'
   ].join('')),
 
@@ -38,6 +30,8 @@ IntegrationView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(this.template(this.model.attributes));
+
+    this._toggleManage();
   },
 
   _toggleManage: function() {
