@@ -15,12 +15,12 @@ IntegrationView = Backbone.View.extend({
     '<div class="integration-header">',
     ' <div class="integration-content"><h1><%- name %></h1>',
     ' <div class="description"><%- description %></div>',
-    ' <ul class="add">',
-    '   <li><a href="#" class="manage-integration">Manage</a></li>',
+    ' <ul class="expand">',
+    '   <li class="manage-integration"><a href="#"><div class="arrow right"></div></a></li>',
     ' </ul></div>',
     '</div>',
     '<ul class="configured-integrations">',
-    ' <li class="configured-integration">',
+    ' <li class="configured-integration disabled">',
     '   <div class="configured-header">',
     '     <div class="description">Add new <%- name %></div>',
     '     <ul class="options">',
@@ -33,6 +33,7 @@ IntegrationView = Backbone.View.extend({
 
   initialize: function() {
     this._$configuredIntegrationsView = null;
+    this.toggle = false;
   },
 
   render: function() {
@@ -45,12 +46,17 @@ IntegrationView = Backbone.View.extend({
     }
 
     this.$('.configured-integrations').toggle('fast');
+
+    this.$('.manage-integration div')
+      .removeClass(this.toggle ? 'down' : 'right')
+      .addClass(this.toggle ? 'right' : 'down');
+
+    this.toggle = this.toggle ? false : true;
   },
 
   _loadConfiguredIntegrations: function() {
     this._$configuredIntegrationsView = new ConfiguredIntegrationManagerView({
       el: this.$el,
-      name: this.model.name,
       model: new ConfiguredIntegrationManager()
     });
 
@@ -94,6 +100,10 @@ ConfiguredIntegrationView = Backbone.View.extend({
 
   _showEnabledState: function() {
     var enabled = this.model.get('enabled');
+
+    this.$el
+      .removeClass(enabled ? 'disabled' : 'enabled')
+      .addClass(enabled ? 'enabled' : 'disabled');
 
     this._$enableToggle
       .text(enabled ? gettext('Disable') : gettext('Enable'));

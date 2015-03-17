@@ -47,7 +47,15 @@ ConfiguredIntegration = Backbone.Model.extend({
       this.save({
           enabled: true
       }, {
-          wait: true
+          wait: true,
+          error: _.bind(function(model, xhr) {
+              console.log("error");
+              this.set({
+                  loadable: false,
+                  loadError: xhr.errorRsp.load_error,
+                  canEnable: !xhr.errorRsp.needs_reload
+              });
+          }, this)
       });
   },
 
@@ -106,6 +114,10 @@ ConfiguredIntegration = Backbone.Model.extend({
   },
 
   parse: function(rsp) {
+    if (rsp.stat !== undefined) {
+      rsp = rsp.configured_integration;
+    }
+
     return {
       id: rsp.id,
       name: rsp.name,
