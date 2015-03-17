@@ -147,8 +147,13 @@ IntegrationCollection = Backbone.Collection.extend({
 ConfiguredIntegrationCollection = Backbone.Collection.extend({
   model: ConfiguredIntegration,
 
+  initialize: function(options) {
+    this.integrationID = options.integrationID;
+  },
+
   url: function() {
-    return SITE_ROOT + 'api/configured-integrations/';
+    return SITE_ROOT + 'api/configured-integrations/?integrationID=' +
+      this.integrationID;
   },
 
   parse: function(rsp) {
@@ -171,8 +176,8 @@ IntegrationManager = Backbone.Model.extend({
 });
 
 ConfiguredIntegrationManager = Backbone.Model.extend({
-  initialize: function() {
-    this.configuredIntegrations = new ConfiguredIntegrationCollection();
+  initialize: function(options) {
+    this.configuredIntegrations = new ConfiguredIntegrationCollection(options);
   },
 
   load: function() {
