@@ -1,0 +1,141 @@
+/****************************************************************************
+ * Integration manager
+ ****************************************************************************/
+
+.arrow {
+  width: 0; 
+  height: 0; 
+
+  display: inline-block;
+  margin-left: 10px;
+
+  &.right {
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid black;
+  }
+
+  &.down {
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid black;
+  }
+}
+
+#integration-manager {
+  .actions {
+    background: #FDFDFD;
+    border: 1px #AAAAAA solid;
+    border-top: 0;
+    border-bottom: 1px #999999 solid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      a {
+        color: #0000FF;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+.integration-icon {
+  height: 48px;
+  width: 48px;
+  margin-left: 10px;
+  float: left;
+}
+
+.integration-content {
+  padding-left: 20px; 
+  float: left;
+}
+
+.integration-list-page {
+  #content-main {
+    float: left;
+    width: 100%;
+  }
+}
+
+.integrations {
+  border: 1px #AAAAAA solid;
+  border-top: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    list-style: none;
+    padding: 10px;
+    position: relative;
+  }
+
+  .integration {
+    border-bottom: 1px #AAAAAA solid;
+
+    h1 {
+      font-size: 120%;
+      margin: 0;
+    }
+
+    .description {
+      margin: 1.5em 10em 1em 0em;
+      padding: 0;
+      float: left;
+    }
+
+    .expand {
+      display: inline-block;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .integration-header {
+      display: inline-block;
+    }
+
+    .configured-integrations {
+      display: none;
+
+      .configured-integration {
+        display: block;
+        width: 80%;
+        margin: 0px auto;
+        border-bottom: 1px #E0E0E0 solid;
+
+        &.enabled {
+          border-left: 8px #AACCAA solid;
+        }
+
+        &.disabled {
+          border-left: 8px #DDDDDD solid;
+        }
+      }
+
+      .configured-header {
+        padding-bottom: 20px;
+      }
+
+      .description {
+        margin: 0px;
+      }
+
+      .options {
+        position: absolute;
+        top: 0px;
+        right: 10px;
+
+        .option {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
