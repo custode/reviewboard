@@ -355,6 +355,7 @@ PIPELINE_CSS = dict({
         'source_filenames': (
             'rb/css/pages/admin.less',
             'rb/css/pages/admin-dashboard.less',
+            'rb/css/pages/integration.less',
         ),
         'output_filename': 'rb/css/admin.min.css',
         'absolute_paths': False,
