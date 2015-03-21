@@ -111,7 +111,7 @@ ConfiguredIntegrationView = Backbone.View.extend({
 
 		if (response) {
 			this.model.destroy({
-				success: _.bind(function(response) {
+				success: _.bind(function() {
 					this.remove();
 				}, this),
 				error: function(model, xhr) {
