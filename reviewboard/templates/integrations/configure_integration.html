@@ -1,0 +1,10 @@
+{% extends "siteconfig/settings.html" %}
+{% load djblets_utils i18n staticfiles %}
+
+{% block page_title %}
+{% blocktrans %}Configure {{integration_name}} {% endblocktrans %}
+{% endblock %}
+
+{% block form_title %}
+{%  blocktrans %}Configure {{integration_name}}{% endblocktrans %}
+{% endblock %}
