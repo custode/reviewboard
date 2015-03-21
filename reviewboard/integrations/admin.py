@@ -6,7 +6,7 @@ from reviewboard.integrations.models import ConfiguredIntegration
 
 
 class ConfiguredIntegrationAdmin(admin.ModelAdmin):
-    list_display = ('integration_id', 'description', 'is_enabled',)
+    list_display = ('description', 'integration_id', 'is_enabled',)
     raw_id_fields = ('local_site',)
 
 
