@@ -19,6 +19,7 @@ from reviewboard.changedescs.models import ChangeDescription
 from reviewboard.diffviewer.models import DiffSet, DiffSetHistory
 from reviewboard.reviews.errors import (PermissionError,
                                         PublishError)
+from reviewboard.reviews.fields import get_review_request_field
 from reviewboard.reviews.managers import ReviewRequestManager
 from reviewboard.reviews.models.base_comment import BaseComment
 from reviewboard.reviews.models.base_review_request_details import \
@@ -360,7 +361,8 @@ class ReviewRequest(BaseReviewRequestDetails):
         """Returns all public top-level reviews for this review request."""
         return self.reviews.filter(public=True, base_reply_to__isnull=True)
 
-    def is_accessible_by(self, user, local_site=None, request=None):
+    def is_accessible_by(self, user, local_site=None, request=None,
+                         silent=False):
         """Returns whether or not the user can read this review request.
 
         This performs several checks to ensure that the user has access.
@@ -382,24 +384,33 @@ class ReviewRequest(BaseReviewRequestDetails):
             return True
 
         if not self.public and not self.is_mutable_by(user):
-            logging.warning('Review Request pk=%d (display_id=%d) is not '
-                            'accessible by user %s because it has not yet '
-                            'been published.',
-                            self.pk, self.display_id, user, request=request)
+            if not silent:
+                logging.warning('Review Request pk=%d (display_id=%d) is not '
+                                'accessible by user %s because it has not yet '
+                                'been published.',
+                                self.pk, self.display_id, user,
+                                request=request)
+
             return False
 
         if self.repository and not self.repository.is_accessible_by(user):
-            logging.warning('Review Request pk=%d (display_id=%d) is not '
-                            'accessible by user %s because its repository is '
-                            'not accessible by that user.',
-                            self.pk, self.display_id, user, request=request)
+            if not silent:
+                logging.warning('Review Request pk=%d (display_id=%d) is not '
+                                'accessible by user %s because its repository '
+                                'is not accessible by that user.',
+                                self.pk, self.display_id, user,
+                                request=request)
+
             return False
 
         if local_site and not local_site.is_accessible_by(user):
-            logging.warning('Review Request pk=%d (display_id=%d) is not '
-                            'accessible by user %s because its local_site is '
-                            'not accessible by that user.',
-                            self.pk, self.display_id, user, request=request)
+            if not silent:
+                logging.warning('Review Request pk=%d (display_id=%d) is not '
+                                'accessible by user %s because its local_site '
+                                'is not accessible by that user.',
+                                self.pk, self.display_id, user,
+                                request=request)
+
             return False
 
         if (user.is_authenticated() and
@@ -419,14 +430,15 @@ class ReviewRequest(BaseReviewRequestDetails):
         # to. If they can access any of the groups, then they have access
         # to the review request.
         for group in groups:
-            if group.is_accessible_by(user):
+            if group.is_accessible_by(user, silent=silent):
                 return True
 
-        logging.warning('Review Request pk=%d (display_id=%d) is not '
-                        'accessible by user %s because they are not directly '
-                        'listed as a reviewer, and none of the target groups '
-                        'are accessible by that user.',
-                        self.pk, self.display_id, user, request=request)
+        if not silent:
+            logging.warning('Review Request pk=%d (display_id=%d) is not '
+                            'accessible by user %s because they are not '
+                            'directly listed as a reviewer, and none of '
+                            'the target groups are accessible by that user.',
+                            self.pk, self.display_id, user, request=request)
 
         return False
 
@@ -698,7 +710,8 @@ class ReviewRequest(BaseReviewRequestDetails):
                                            text=description or "",
                                            rich_text=rich_text or False)
 
-            changedesc.record_field_change('status', self.status, type)
+            status_field = get_review_request_field('status')(self)
+            status_field.record_change_entry(changedesc, self.status, type)
             changedesc.save()
 
             self.changedescs.add(changedesc)
@@ -741,8 +754,9 @@ class ReviewRequest(BaseReviewRequestDetails):
 
         if self.status != self.PENDING_REVIEW:
             changedesc = ChangeDescription()
-            changedesc.record_field_change('status', self.status,
-                                           self.PENDING_REVIEW)
+            status_field = get_review_request_field('status')(self)
+            status_field.record_change_entry(changedesc, self.status,
+                                             self.PENDING_REVIEW)
 
             if self.status == self.DISCARDED:
                 # A draft is needed if reopening a discarded review request.
@@ -788,7 +802,17 @@ class ReviewRequest(BaseReviewRequestDetails):
 
         if draft is not None:
             # This will in turn save the review request, so we'll be done.
-            changes = draft.publish(self, send_notification=False)
+            try:
+                changes = draft.publish(self, send_notification=False)
+            except Exception:
+                # The draft failed to publish, for one reason or another.
+                # Check if we need to re-increment those counters we
+                # previously decremented.
+                if self.public:
+                    self._increment_reviewer_counts()
+
+                raise
+
             draft.delete()
         else:
             changes = None

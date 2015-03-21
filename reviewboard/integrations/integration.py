@@ -65,7 +65,10 @@ class Integration(object):
     def initialize(self):
         """Initialize the integration.
 
-        This provides custom initialization for the subclass.
+        This provides custom initialization for the subclass. All the processes
+        that are required in initializing the service of the intergration
+        should be in this method. This will allow the integration to be toggle
+        without the need to recreate a new instance of the object.
         """
         pass
 
@@ -73,7 +76,10 @@ class Integration(object):
         """Shut down the integration.
 
         Subclass should override this to shut down the config and
-        deregister all the services provided by the integration.
+        deregister all the services provided by the integration. All the
+        required processes should be in this method. This will allow the
+        integration to be toggle without the need to recreate a new
+        instance of the object.
         """
         raise NotImplementedError
 
