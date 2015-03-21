@@ -167,6 +167,7 @@ class StandardAuthBackend(AuthBackend, ModelBackend):
     _VALID_LOCAL_SITE_PERMISSIONS = [
         'hostingsvcs.change_hostingserviceaccount',
         'hostingsvcs.create_hostingserviceaccount',
+        'integrations.change_configuredintegration',
         'reviews.add_group',
         'reviews.can_change_status',
         'reviews.can_edit_reviewrequest',
