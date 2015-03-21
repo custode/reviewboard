@@ -1,18 +1,13 @@
 {% extends "admin/base_site.html" %}
-{% load compressed djblets_deco staticfiles %}
-
-{% load admin_list compressed djblets_extensions djblets_js i18n staticfiles %}
+{% load compressed i18n staticfiles %}
 
 {% block title %}{% trans "Manage Integrations" %} {{block.super}}{% endblock %}
 
 {% block extrahead %}
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %} "/>
 {%  include "js/jquery.html" %}
-{%  include "js/jquery-ui.html" %}
 {%  include "js/underscore.html" %}
 {%  include "js/backbone.html" %}
 {%  compressed_js "integrations" %}
-
 {{block.super}}
 {% endblock %}
 
@@ -21,13 +16,9 @@
 <h1 class="title">{% trans "Manage Integrations" %}</h1>
 
 <div id="content-main">
- <form id="integration-manager" method="POST" action=".">
-  {% csrf_token %}
-  <input type="hidden" name="full-reload" value="1" />
-
-  <ul class="integrations">
-  </ul>
- </form>
+  <form id="integration-manager" method="POST" action=".">
+    <ul class="integrations"></ul>
+  </form>
 </div>
 
 <script>
@@ -40,6 +31,5 @@
         view.render();
     });
 </script>
-
 
 {% endblock %}
