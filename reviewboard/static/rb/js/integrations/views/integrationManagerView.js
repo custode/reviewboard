@@ -1,6 +1,10 @@
 /*
-Provide the view for each integration
-*/
+ * Display an integration class in the Manage Integration list.
+ *
+ * This will show information about the Integration, and also 
+ * ConfiguredIntegration which belongs to this integration class.
+ * It will also provide link to create new instance of this.
+ */
 IntegrationView = Backbone.View.extend({
 	className: 'integration',
 	tagName: 'li',
@@ -33,6 +37,13 @@ IntegrationView = Backbone.View.extend({
 		this._loadConfiguredIntegrations();
 	},
 
+	/*
+	 * Load all the configured integrations that belongs to this integration.
+	 *
+	 * This will load an configured integration manager view which will
+	 * display all the ConfiguredIntegration object that belongs to this
+	 * Integration class.
+	 */
 	_loadConfiguredIntegrations: function() {
 		this._$configuredIntegrationsView = new ConfiguredIntegrationManagerView({
 			el: this.$el,
@@ -45,9 +56,14 @@ IntegrationView = Backbone.View.extend({
 	}
 });
 
+
 /*
-Provide the view for each configured integration
-*/
+ * Displays an configured integration in Manage Integration list.
+ *
+ * This wil show all the information about the ConfiguredIntegration object,
+ * and provide enabling/disabling/deleting of instance. It will also
+ * provide links for configuring it.
+ */
 ConfiguredIntegrationView = Backbone.View.extend({
 	className: 'configured-integration',
 	tagName: 'li',
@@ -84,6 +100,11 @@ ConfiguredIntegrationView = Backbone.View.extend({
 		this._showEnabledState();
 	},
 
+	/*
+	 * Updates the view to reflect the current enabled state.
+	 *
+	 * The Enable/Disable linke will change to reflect the state.
+	 */
 	_showEnabledState: function() {
 		var enabled = this.model.get('enabled');
 
@@ -95,6 +116,9 @@ ConfiguredIntegrationView = Backbone.View.extend({
 			.text(enabled ? gettext('Disable') : gettext('Enable'));
 	},
 
+	/*
+	 * Toggle the enabled state of the ConfiguredIntegration.
+	 */
 	_toggleEnableState: function() {
 		if (this.model.get('enabled')) {
 			this.model.disable();
@@ -105,6 +129,14 @@ ConfiguredIntegrationView = Backbone.View.extend({
 		return false;
 	},
 
+	/*
+	 * Delete the ConfiguredIntegration object.
+	 *
+	 * This destory the ConfiguredIntegration by call HTTP DELETE
+	 * through the destory method. The ConfiguredIntegration will be removed
+	 * from the list if the response from the server is a success. If not,
+	 * it will alert the user of the error in deleting.
+	 */
 	_deleteIntegration: function() {
 		var response = confirm("This action will delete the configured"
 							 + " integration.");
@@ -125,8 +157,12 @@ ConfiguredIntegrationView = Backbone.View.extend({
 	}
 });
 
+
 /*
-*/
+ * Display the interface showing all Integrations.
+ *
+ * This loads the list of Integrations and display each in a list.
+ */
 IntegrationManagerView = Backbone.View.extend({
 	initialize: function() {
 		this._$integrations = null;
@@ -155,8 +191,12 @@ IntegrationManagerView = Backbone.View.extend({
 });
 
 /*
-Provide the view to manage all the integrations
-*/
+ * Display the interface showing all the ConfiguredIntegrations.
+ *
+ * This is used by the IntegrationView to generate all the
+ * ConfiguredIntegration that belongs to the integration class.
+ * It will render each ConfiguredIntegration in the list.
+ */
 ConfiguredIntegrationManagerView = Backbone.View.extend({
 	initialize: function(options) {
 		this._$configuredIntegrations = null;

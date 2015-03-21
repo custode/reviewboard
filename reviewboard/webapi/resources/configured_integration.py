@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse
 
 from djblets.util.decorators import augment_method_from
 from djblets.webapi.decorators import (webapi_login_required,
-                                       webapi_permission_required,
                                        webapi_request_fields,
                                        webapi_response_errors)
 from djblets.webapi.errors import (DOES_NOT_EXIST,
@@ -58,7 +57,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         },
         'configure_link': {
             'type': str,
-            'description': 'The URL for configurating this resource'
+            'description': 'The URL for configurating this resource.'
         }
     }
 

@@ -1,6 +1,8 @@
 /*
-This represent an integration model
-*/
+ * Represent an integration class listed in the Manage Integration list.
+ *
+ * This stores the various information about the integration.
+ */
 Integration = Backbone.Model.extend({
 	defaults: {
 		integrationID: null,
@@ -21,9 +23,13 @@ Integration = Backbone.Model.extend({
 	}
 });
 
+
 /*
-This represent an configured integration model
-*/
+ * Represents a configured integration for a integration class.
+ *
+ * This stores the various information about the ConfiguredIntegration object
+ * provides action to enable or disable the instance. 
+ */
 ConfiguredIntegration = Backbone.Model.extend({
 	defaults: {
 		id: null,
@@ -55,6 +61,7 @@ ConfiguredIntegration = Backbone.Model.extend({
 			});
 	},
 
+
 	/*
 	 * Disables the integration.
 	 */
@@ -69,6 +76,7 @@ ConfiguredIntegration = Backbone.Model.extend({
 					}
 			});
 	},
+
 
 	/*
 	 * Returns a JSON payload for requests sent to the server.
@@ -128,6 +136,10 @@ ConfiguredIntegration = Backbone.Model.extend({
 	}
 });
 
+
+/*
+ * A collection of Integration.
+ */
 IntegrationCollection = Backbone.Collection.extend({
 	model: Integration,
 
@@ -140,6 +152,10 @@ IntegrationCollection = Backbone.Collection.extend({
 	}
 });
 
+
+/*
+ * A collection of ConfiguredIntegration.
+ */
 ConfiguredIntegrationCollection = Backbone.Collection.extend({
 	model: ConfiguredIntegration,
 
@@ -157,6 +173,13 @@ ConfiguredIntegrationCollection = Backbone.Collection.extend({
 	}
 });
 
+
+/*
+ * Manages Integrations.
+ *
+ * This stores a collection of Integration, and provide functionality to load
+ * the list from the server.
+ */
 IntegrationManager = Backbone.Model.extend({
 	initialize: function() {
 		this.integrations = new IntegrationCollection();
@@ -171,6 +194,13 @@ IntegrationManager = Backbone.Model.extend({
 	}
 });
 
+
+/*
+ * Manages configured integrations.
+ *
+ * This stores a collection of ConfiguredIntegration, and provide functionality
+ * to load the list from the server.
+ */
 ConfiguredIntegrationManager = Backbone.Model.extend({
 	initialize: function(options) {
 		this.configuredIntegrations = new ConfiguredIntegrationCollection(options);
