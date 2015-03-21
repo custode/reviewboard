@@ -12,6 +12,7 @@ class IntegrationManager(object):
     def __init__(self):
         self._config_instances = {}
 
+
     def load(self):
         self._initialize_configs()
 
