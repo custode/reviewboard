@@ -153,6 +153,26 @@ class ConfiguredIntegrationResource(WebAPIResource):
             self.item_result_key: config
         }
 
+    @webapi_login_required
+    def delete(self, request, *args, **kwargs):
+        """Handle DELETE of configured integration with integration manager.
+
+        This is used to delete a configured integration object if the user
+        has permissions to do so.
+        """
+        try:
+            config = self.get_object(request, *args, **kwargs)
+        except:
+            return DOES_NOT_EXIST
+
+        if not self.has_access_permissions(request, config, *args, **kwargs):
+            return self.get_no_access_error(request, obj=config, *args,
+                                            **kwargs)
+
+        self._integration_manager.delete_config(config.pk)
+
+        return 204, {}
+
 
 configured_integration_resource = ConfiguredIntegrationResource(
     get_integration_manager())

@@ -14,8 +14,8 @@ IntegrationView = Backbone.View.extend({
 		'<img class="integration-icon" src="<%-iconPath%>">',
 		' <div class="integration-content"><h1><%- name %></h1>',
 		' <div class="description"><%- description %></div>',
-		' <ul class="expand">',
-		'   <li><a href="#">Add</a></li>',
+		' <ul class="add">',
+		'   <li><a href="<%- newLink %>">Add</a></li>',
 		' </ul></div>',
 		'</div>',
 		'<ul class="configured-integrations">',
@@ -54,19 +54,24 @@ ConfiguredIntegrationView = Backbone.View.extend({
 
 	events: {
 		'click .configure-integration': '_configureIntegration',
-		'click .enable-toggle': '_toggleEnableState'
+		'click .enable-toggle': '_toggleEnableState',
+		'click .delete-integration': '_deleteIntegration'
 	},
 
 	template: _.template([
 		'<div class="configured-header">',
-		' <div class="description"><%- description %></div>',
-		' <ul class="options">',
-		'   <li class="option"><a href="#" class="enable-toggle"></a></li>',
-		'   <li class="option">',
-		'     <a href="<%- configureLink %>" class="configure-integration">',
+		'  <div class="description"><%- description %></div>',
+		'  <ul class="options">',
+		'    <li class="option"><a href="#" class="enable-toggle"></a></li>',
+		'    <li class="option">',
+		'      <a href="<%- configureLink %>" class="configure-integration">',
 		'        Configure',
-		'     </a>',
-		'   </li>',
+		'      </a>',
+		'    </li>',
+		'	 <li class="option">',
+		'      <a href="#" class="delete-integration">',
+		'	     <span class="ui-icon ui-icon-trash"></span>',
+		'      </a></li>',
 		' </ul>',
 		'</div>'
 	].join('')),
@@ -95,6 +100,18 @@ ConfiguredIntegrationView = Backbone.View.extend({
 			this.model.disable();
 		} else {
 			this.model.enable();
+		}
+
+		return false;
+	},
+
+	_deleteIntegration: function() {
+		var response = confirm("This action will delete the configured"
+							 + " integration.");
+
+		if (response) {
+			this.model.destroy();
+			this.remove();
 		}
 
 		return false;
