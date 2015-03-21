@@ -48,14 +48,10 @@ ConfiguredIntegration = Backbone.Model.extend({
 					enabled: true
 			}, {
 					wait: true,
-					error: _.bind(function(model, xhr) {
-							console.log("error");
-							this.set({
-									loadable: false,
-									loadError: xhr.errorRsp.load_error,
-									canEnable: !xhr.errorRsp.needs_reload
-							});
-					}, this)
+					error: function(model, xhr) {
+							alert(gettext('Failed to enable integration. ') +
+										  xhr.errorText + '.');
+					}
 			});
 	},
 

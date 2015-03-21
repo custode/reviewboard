@@ -110,8 +110,15 @@ ConfiguredIntegrationView = Backbone.View.extend({
 							 + " integration.");
 
 		if (response) {
-			this.model.destroy();
-			this.remove();
+			this.model.destroy({
+				success: _.bind(function(response) {
+					this.remove();
+				}, this),
+				error: function(model, xhr) {
+					alert(gettext('Failed to delete integration. ') +
+                    	xhr.errorText + '.');
+				}
+			});
 		}
 
 		return false;

@@ -1,7 +1,9 @@
 from __future__ import unicode_literals
 
-from djblets.webapi.decorators import webapi_login_required
 from djblets.webapi.core import WebAPIResponse
+from djblets.webapi.decorators import (webapi_login_required,
+                                       webapi_response_errors)
+from djblets.webapi.errors import NOT_LOGGED_IN, PERMISSION_DENIED
 
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags.staticfiles import static
@@ -67,18 +69,14 @@ class IntegrationResource(WebAPIResource):
             return reverse('new-integration',
                            args=(integration.integration_id,))
 
-    def has_access_permissions(self, *args, **kwargs):
-        return True
-
-    def has_list_access_permission(self, *args, **kwargs):
-        return True
-
     @webapi_login_required
+    @webapi_response_errors(NOT_LOGGED_IN, PERMISSION_DENIED)
     def get_list(self, request, *args, **kwargs):
         data = list(map(lambda obj:
                         self.serialize_object(obj, request=request),
                         self._integration_manager.get_integrations()))
 
         return WebAPIResponse(request, {'integrations': data})
+
 
 integration_resource = IntegrationResource(get_integration_manager())
