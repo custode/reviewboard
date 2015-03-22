@@ -6,12 +6,12 @@ from reviewboard.integrations.integration import (get_integrations,
                                                   get_integration)
 from reviewboard.integrations.models import ConfiguredIntegration
 
+
 class IntegrationManager(object):
     """A manager for all integrations."""
 
     def __init__(self):
         self._config_instances = {}
-
 
     def load(self):
         self._initialize_configs()
