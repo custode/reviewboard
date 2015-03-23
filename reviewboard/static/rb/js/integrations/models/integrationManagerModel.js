@@ -61,7 +61,6 @@ ConfiguredIntegration = Backbone.Model.extend({
             });
     },
 
-
     /*
      * Disables the integration.
      */
@@ -76,7 +75,6 @@ ConfiguredIntegration = Backbone.Model.extend({
                     }
             });
     },
-
 
     /*
      * Returns a JSON payload for requests sent to the server.
