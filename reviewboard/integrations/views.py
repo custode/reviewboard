@@ -8,6 +8,7 @@ from django.template.context import RequestContext
 
 from reviewboard.integrations.manager import get_integration_manager
 
+
 manager = get_integration_manager()
 
 

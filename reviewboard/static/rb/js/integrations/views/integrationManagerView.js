@@ -1,7 +1,7 @@
 /*
  * Display an integration class in the Manage Integration list.
  *
- * This will show information about the Integration, and also 
+ * This will show information about the Integration, and also
  * ConfiguredIntegration which belongs to this integration class.
  * It will also provide link to create new instance of this.
  */
@@ -148,7 +148,7 @@ ConfiguredIntegrationView = Backbone.View.extend({
 				}, this),
 				error: function(model, xhr) {
 					alert(gettext('Failed to delete integration. ') +
-                    	xhr.errorText + '.');
+						  xhr.errorText + '.');
 				}
 			});
 		}

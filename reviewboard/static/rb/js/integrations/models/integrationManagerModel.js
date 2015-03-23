@@ -28,7 +28,7 @@ Integration = Backbone.Model.extend({
  * Represents a configured integration for a integration class.
  *
  * This stores the various information about the ConfiguredIntegration object
- * provides action to enable or disable the instance. 
+ * provides action to enable or disable the instance.
  */
 ConfiguredIntegration = Backbone.Model.extend({
 	defaults: {
@@ -56,7 +56,7 @@ ConfiguredIntegration = Backbone.Model.extend({
 					wait: true,
 					error: function(model, xhr) {
 							alert(gettext('Failed to enable integration. ') +
-										  xhr.errorText + '.');
+								  xhr.errorText + '.');
 					}
 			});
 	},
@@ -72,7 +72,7 @@ ConfiguredIntegration = Backbone.Model.extend({
 					wait: true,
 					error: function(model, xhr) {
 							alert(gettext('Failed to disable integration. ') +
-										xhr.errorText + '.');
+								  xhr.errorText + '.');
 					}
 			});
 	},

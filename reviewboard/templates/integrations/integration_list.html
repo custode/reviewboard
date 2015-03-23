@@ -4,10 +4,10 @@
 {% block title %}{% trans "Manage Integrations" %} {{block.super}}{% endblock %}
 
 {% block extrahead %}
-{%  include "js/jquery.html" %}
-{%  include "js/underscore.html" %}
-{%  include "js/backbone.html" %}
-{%  compressed_js "integrations" %}
+{% include "js/jquery.html" %}
+{% include "js/underscore.html" %}
+{% include "js/backbone.html" %}
+{% compressed_js "integrations" %}
 {{block.super}}
 {% endblock %}
 
