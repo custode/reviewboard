@@ -50,69 +50,69 @@ ConfiguredIntegration = Backbone.Model.extend({
      * Enables the integration.
      */
     enable: function() {
-            this.save({
-                    enabled: true
-            }, {
-                    wait: true,
-                    error: function(model, xhr) {
-                            alert(gettext('Failed to enable integration. ') +
-                                  xhr.errorText + '.');
-                    }
-            });
+        this.save({
+            enabled: true
+        }, {
+            wait: true,
+            error: function(model, xhr) {
+                alert(gettext('Failed to enable integration. ') +
+                      xhr.errorText + '.');
+            }
+        });
     },
 
     /*
      * Disables the integration.
      */
     disable: function() {
-            this.save({
-                    enabled: false
-            }, {
-                    wait: true,
-                    error: function(model, xhr) {
-                            alert(gettext('Failed to disable integration. ') +
-                                  xhr.errorText + '.');
-                    }
-            });
+        this.save({
+            enabled: false
+        }, {
+            wait: true,
+            error: function(model, xhr) {
+                alert(gettext('Failed to disable integration. ') +
+                      xhr.errorText + '.');
+            }
+        });
     },
 
     /*
      * Returns a JSON payload for requests sent to the server.
      */
     toJSON: function() {
-            return {
-                    enabled: this.get('enabled')
-            };
+        return {
+            enabled: this.get('enabled')
+        };
     },
 
     /*
      * Performs AJAX requests against the server-side API.
      */
     sync: function(method, model, options) {
-            Backbone.sync.call(this, method, model, _.defaults({
-                    contentType: 'application/x-www-form-urlencoded',
-                    data: model.toJSON(options),
-                    processData: true,
-                    error: _.bind(function(xhr) {
-                            var rsp = null,
-                                    loadError,
-                                    text;
+        Backbone.sync.call(this, method, model, _.defaults({
+            contentType: 'application/x-www-form-urlencoded',
+            data: model.toJSON(options),
+            processData: true,
+            error: _.bind(function(xhr) {
+                var rsp = null,
+                    loadError,
+                    text;
 
-                            try {
-                                    rsp = $.parseJSON(xhr.responseText);
-                                    text = rsp.err.msg;
-                                    loadError = rsp.load_error;
-                            } catch (e) {
-                                    text = 'HTTP ' + xhr.status + ' ' + xhr.statusText;
-                            }
+                try {
+                    rsp = $.parseJSON(xhr.responseText);
+                    text = rsp.err.msg;
+                    loadError = rsp.load_error;
+                } catch (e) {
+                    text = 'HTTP ' + xhr.status + ' ' + xhr.statusText;
+                }
 
-                            if (_.isFunction(options.error)) {
-                                    xhr.errorText = text;
-                                    xhr.errorRsp = rsp;
-                                    options.error(xhr, options);
-                            }
-                    }, this)
-            }, options));
+                if (_.isFunction(options.error)) {
+                    xhr.errorText = text;
+                    xhr.errorRsp = rsp;
+                    options.error(xhr, options);
+                }
+            }, this)
+        }, options));
     },
 
     parse: function(rsp) {
