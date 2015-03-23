@@ -190,6 +190,7 @@ IntegrationManagerView = Backbone.View.extend({
     }
 });
 
+
 /*
  * Display the interface showing all the ConfiguredIntegrations.
  *
