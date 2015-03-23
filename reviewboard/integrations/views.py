@@ -16,6 +16,11 @@ manager = get_integration_manager()
 @staff_member_required
 def integration_list(request,
                      template_name='integrations/integration_list.html'):
+    if request.method == 'POST':
+        if 'full-reload' in request.POST:
+            # Reload both extension manager and integration manager
+            return HttpResponseRedirect('.')
+    else:
         return render_to_response(template_name, RequestContext(request))
 
 
@@ -44,9 +49,10 @@ def configure_integration(request, integration_class=None, config_id=None,
 
             return HttpResponseRedirect(request.path + '?save=1')
     else:
-        form = form_class(integration, config=config_instance)
+        # form = form_class(integration, config=config_instance)
+        form = form_class(integration.extension)
 
     return render_to_response(template_name, RequestContext(request, {
         'integration_name': integration.name,
         'form': form,
-        }))
+    }))
