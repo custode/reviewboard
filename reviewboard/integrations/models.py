@@ -38,7 +38,10 @@ class ConfiguredIntegration(models.Model):
         The integration can be access by the user if it is set to global or if
         the user has access to the LocalSite.
         """
-        return self.is_mutable_by(user)
+        if self.local_site and not self.local_site.is_accessible_by(user):
+            return False
+
+        return True
 
     def is_mutable_by(self, user):
         """Returns whether the user can modify this configuration.

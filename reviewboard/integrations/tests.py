@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from reviewboard.extensions.base import Extension
 from reviewboard.integrations.integration import (Integration,
                                                   register_integration,
                                                   unregister_integration)
@@ -8,33 +9,25 @@ from reviewboard.integrations.manager import IntegrationManager
 from reviewboard.testing.testcase import TestCase
 
 
+class TestExtension(Extension):
+    id = 'TestExtension'
+
+
 class TestIntegration(Integration):
     integration_id = 'TestIntegration'
+    name = 'Test Integration'
+    description = 'Add test integration for your review.'
+    extension = TestExtension
+
+    def initialize(self):
+        self.init = True
 
     def shutdown(self):
-        pass
+        self.init = False
 
 
 class IntegrationManagerTest(TestCase):
     """Testing Integration Manager."""
-
-    def create_configured_integration(self, integration_id="TestIntegration",
-                                      is_enabled=False,
-                                      configuration={},
-                                      description="Test description",
-                                      local_site=None):
-        """Creates a configured integration for testing.
-
-        The configured integration is populated with the default data that can
-        be overridden by the caller. It may optionally be attached to a
-        LocalSite.
-        """
-        return ConfiguredIntegration.objects.create(
-            integration_id=integration_id,
-            is_enabled=is_enabled,
-            configuration={},
-            description=description,
-            local_site=local_site)
 
     def setUp(self):
         register_integration(TestIntegration)
@@ -47,8 +40,13 @@ class IntegrationManagerTest(TestCase):
     def test_start_with_existing_configs(self):
         """Testing integration manager initializing with existing configured
         integrations."""
-        config1 = self.create_configured_integration()
-        config2 = self.create_configured_integration(is_enabled=True)
+        config1 = self.create_configured_integration(
+            integration_id="TestIntegration",
+        )
+        config2 = self.create_configured_integration(
+            integration_id="TestIntegration",
+            is_enabled=True
+        )
         self.manager.register_config(config1)
         self.manager.register_config(config2)
 
@@ -67,7 +65,9 @@ class IntegrationManagerTest(TestCase):
     def test_register_duplicate_config(self):
         """Testing integration manager registering duplicate configured
         integration."""
-        config1 = self.create_configured_integration()
+        config1 = self.create_configured_integration(
+            integration_id="TestIntegration"
+        )
         self.manager.register_config(config1)
 
         self.assertRaises(KeyError, self.manager.register_config, config1)
@@ -75,8 +75,11 @@ class IntegrationManagerTest(TestCase):
     def test_register_duplicate_config_with_reregister(self):
         """Testing integration manager updating registered configured
         integration."""
-        config1 = self.create_configured_integration()
-        config2 = self.create_configured_integration(is_enabled=True)
+        config1 = self.create_configured_integration(
+            integration_id="TestIntegration")
+        config2 = self.create_configured_integration(
+            integration_id="TestIntegration",
+            is_enabled=True)
         self.manager.register_config(config1)
         self.manager.register_config(config2)
         self.manager.update_config(1)
@@ -86,8 +89,11 @@ class IntegrationManagerTest(TestCase):
     def test_unregister_exisiting_config(self):
         """Testing integration manager unregistering registered configured
         integration."""
-        config1 = self.create_configured_integration()
-        config2 = self.create_configured_integration(is_enabled=True)
+        config1 = self.create_configured_integration(
+            integration_id="TestIntegration")
+        config2 = self.create_configured_integration(
+            integration_id="TestIntegration",
+            is_enabled=True)
         self.manager.register_config(config1)
         self.manager.register_config(config2)
 
@@ -103,7 +109,9 @@ class IntegrationManagerTest(TestCase):
 
     def test_toggle_config(self):
         """Testing integration manager toggling of configured integration."""
-        config1 = self.create_configured_integration()
+        config1 = self.create_configured_integration(
+            integration_id="TestIntegration"
+        )
         self.manager.register_config(config1)
 
         config = ConfiguredIntegration.objects.get(pk=1)
