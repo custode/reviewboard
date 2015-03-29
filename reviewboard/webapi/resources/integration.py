@@ -1,8 +1,7 @@
 from __future__ import unicode_literals
 
-from djblets.webapi.core import WebAPIResponse
-from djblets.webapi.decorators import (webapi_login_required,
-                                       webapi_response_errors)
+from djblets.util.decorators import augment_method_from
+from djblets.webapi.responses import WebAPIResponse
 from djblets.webapi.errors import NOT_LOGGED_IN, PERMISSION_DENIED
 
 from django.core.urlresolvers import reverse
@@ -10,6 +9,9 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 
 from reviewboard.integrations.manager import get_integration_manager
 from reviewboard.webapi.base import WebAPIResource
+from reviewboard.webapi.decorators import (webapi_check_local_site,
+                                           webapi_login_required,
+                                           webapi_response_errors)
 
 
 class IntegrationResource(WebAPIResource):
@@ -49,7 +51,7 @@ class IntegrationResource(WebAPIResource):
         }
     }
 
-    allowed_methods = ('GET')
+    allowed_methods = ('GET',)
 
     def __init__(self, integration_manager):
         super(IntegrationResource, self).__init__()
@@ -69,14 +71,23 @@ class IntegrationResource(WebAPIResource):
             return reverse('new-integration',
                            args=(integration.integration_id,))
 
-    @webapi_login_required
-    @webapi_response_errors(NOT_LOGGED_IN, PERMISSION_DENIED)
-    def get_list(self, request, *args, **kwargs):
-        data = list(map(lambda obj:
+    def get_queryset(self, request, is_list=False, local_site_name=None,
+                     *args, **kwargs):
+        return list(map(lambda obj:
                         self.serialize_object(obj, request=request),
                         self._integration_manager.get_integrations()))
 
-        return WebAPIResponse(request, {'integrations': data})
+    @augment_method_from(WebAPIResource)
+    def get_list(self, request, *args, **kwargs):
+        pass
+
+    def _get_list_impl(self, request, *args, **kwargs):
+        response_args = self.build_response_args(request)
+        return WebAPIResponse(request, {
+                              'integrations': self.get_queryset(request,
+                                                                *args,
+                                                                **kwargs)
+                              }, **response_args)
 
 
 integration_resource = IntegrationResource(get_integration_manager())
