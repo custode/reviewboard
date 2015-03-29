@@ -121,6 +121,8 @@ class AdminPermissionTests(TestCase):
         self.assertTrue(self.user.has_perm(
             'hostingsvcs.create_hostingserviceaccount', self.local_site))
         self.assertTrue(self.user.has_perm(
+            'integrations.change_configuredintegration', self.local_site))
+        self.assertTrue(self.user.has_perm(
             'reviews.can_change_status', self.local_site))
         self.assertTrue(self.user.has_perm(
             'reviews.can_edit_reviewrequest', self.local_site))
