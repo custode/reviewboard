@@ -49,7 +49,7 @@ class ResourceListTests(BaseWebAPITestCase):
     def setup_basic_get_test(self, user, with_local_site, local_site_name,
                              populate_items):
         config = self.create_configured_integration(
-            integration_id="TestIntegration")
+            integration_id='TestIntegration')
 
         if populate_items:
             manager = IntegrationManager()
@@ -72,10 +72,10 @@ class ResourceItemTests(BaseWebAPITestCase):
     basic_delete_use_admin = True
     basic_put_use_admin = True
 
-    def create_configured_integration(self, integration_id="TestIntegration",
+    def create_configured_integration(self, integration_id='TestIntegration',
                                       is_enabled=False,
                                       configuration={},
-                                      description="Test description",
+                                      description='Test description',
                                       local_site=None):
         """Creates a configured integration for testing.
 
@@ -122,7 +122,7 @@ class ResourceItemTests(BaseWebAPITestCase):
 
     def setup_basic_get_test(self, user, with_local_site, local_site_name):
         config = self.create_configured_integration(
-            integration_id="TestIntegration")
+            integration_id='TestIntegration')
 
         return (get_configured_integration_item_url(config, local_site_name),
                 configured_integration_item_mimetype, config)
@@ -139,7 +139,7 @@ class ResourceItemTests(BaseWebAPITestCase):
             local_site = None
 
         config = self.create_configured_integration(
-            integration_id="TestIntegration",
+            integration_id='TestIntegration',
             local_site=local_site)
 
         return (get_configured_integration_item_url(config, local_site_name),

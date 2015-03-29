@@ -16,6 +16,7 @@ from reviewboard.webapi.tests.urls import get_integration_list_url
 @six.add_metaclass(BasicTestsMetaclass)
 class ResourceListTests(BaseWebAPITestCase):
     """Testing the IntegrationResource APIs."""
+
     fixtures = ['test_users']
     sample_api_url = 'integrations/'
     resource = resources.integration
