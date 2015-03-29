@@ -51,6 +51,21 @@ def get_change_item_url(changedesc, local_site_name=None):
 
 
 #
+# IntegrationResource
+#
+def get_configured_integration_list_url(local_site_name=None):
+    return resources.configured_integration.get_list_url(
+        local_site_name=local_site_name)
+
+
+def get_configured_integration_item_url(config, local_site_name=None):
+    return resources.configured_integration.get_item_url(
+        local_site_name=local_site_name,
+        config_id=config.pk
+        )
+
+
+#
 # DefaultReviewerResource
 #
 def get_default_reviewer_list_url(local_site_name=None):
@@ -287,6 +302,14 @@ def get_hosting_service_account_item_url(account_or_id, local_site_name=None):
     return resources.hosting_service_account.get_item_url(
         local_site_name=local_site_name,
         account_id=account_id)
+
+
+#
+# IntegrationResource
+#
+def get_integration_list_url(local_site_name=None):
+    return resources.integration.get_list_url(
+        local_site_name=local_site_name)
 
 
 #
