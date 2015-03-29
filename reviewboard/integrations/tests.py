@@ -41,10 +41,10 @@ class IntegrationManagerTest(TestCase):
         """Testing integration manager initializing with existing configured
         integrations."""
         config1 = self.create_configured_integration(
-            integration_id="TestIntegration",
+            integration_id='TestIntegration',
         )
         config2 = self.create_configured_integration(
-            integration_id="TestIntegration",
+            integration_id='TestIntegration',
             is_enabled=True
         )
         self.manager.register_config(config1)
@@ -66,7 +66,7 @@ class IntegrationManagerTest(TestCase):
         """Testing integration manager registering duplicate configured
         integration."""
         config1 = self.create_configured_integration(
-            integration_id="TestIntegration"
+            integration_id='TestIntegration'
         )
         self.manager.register_config(config1)
 
@@ -76,9 +76,9 @@ class IntegrationManagerTest(TestCase):
         """Testing integration manager updating registered configured
         integration."""
         config1 = self.create_configured_integration(
-            integration_id="TestIntegration")
+            integration_id='TestIntegration')
         config2 = self.create_configured_integration(
-            integration_id="TestIntegration",
+            integration_id='TestIntegration',
             is_enabled=True)
         self.manager.register_config(config1)
         self.manager.register_config(config2)
@@ -90,9 +90,9 @@ class IntegrationManagerTest(TestCase):
         """Testing integration manager unregistering registered configured
         integration."""
         config1 = self.create_configured_integration(
-            integration_id="TestIntegration")
+            integration_id='TestIntegration')
         config2 = self.create_configured_integration(
-            integration_id="TestIntegration",
+            integration_id='TestIntegration',
             is_enabled=True)
         self.manager.register_config(config1)
         self.manager.register_config(config2)
@@ -110,7 +110,7 @@ class IntegrationManagerTest(TestCase):
     def test_toggle_config(self):
         """Testing integration manager toggling of configured integration."""
         config1 = self.create_configured_integration(
-            integration_id="TestIntegration"
+            integration_id='TestIntegration'
         )
         self.manager.register_config(config1)
 
