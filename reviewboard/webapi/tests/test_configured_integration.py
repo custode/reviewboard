@@ -160,11 +160,7 @@ class ResourceItemTests(BaseWebAPITestCase):
         config = self.create_configured_integration(local_site=local_site)
         manager = get_integration_manager()
         config.save()
-
-        try:
-            manager.register_config(config)
-        except:
-            pass
+        manager.register_config(config, True)
 
         return (get_configured_integration_item_url(config, local_site_name),
                 [config])
