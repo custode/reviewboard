@@ -19,6 +19,7 @@ from reviewboard import scmtools, initialize
 from reviewboard.attachments.models import FileAttachment
 from reviewboard.diffviewer.differ import DiffCompatVersion
 from reviewboard.diffviewer.models import DiffSet, DiffSetHistory, FileDiff
+from reviewboard.integrations.models import ConfiguredIntegration
 from reviewboard.reviews.models import (Comment, FileAttachmentComment,
                                         Group, Review, ReviewRequest,
                                         ReviewRequestDraft, Screenshot,
@@ -275,6 +276,23 @@ class TestCase(DjbletsTestCase):
             dest_detail=dest_detail,
             status=status,
             diff=diff)
+
+    def create_configured_integration(self, integration_id, is_enabled=False,
+                                      configuration={},
+                                      description="Test description",
+                                      local_site=None):
+        """Creates a configured integration for testing.
+
+        The configured integration is populated with the default data that can
+        be overridden by the caller. It may optionally be attached to a
+        LocalSite.
+        """
+        return ConfiguredIntegration.objects.create(
+            integration_id=integration_id,
+            is_enabled=is_enabled,
+            configuration={},
+            description=description,
+            local_site=local_site)
 
     def create_repository(self, with_local_site=False, name='Test Repo',
                           tool_name='Git', path=None, local_site=None,
