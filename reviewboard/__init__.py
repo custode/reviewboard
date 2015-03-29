@@ -81,6 +81,7 @@ def initialize():
     os.environ['RBSITE_PYTHONPATH'] = \
         os.path.dirname(settings_local.__file__)
 
+    from Crypto import Random
     from django.conf import settings
     from django.db import DatabaseError
     from djblets import log
@@ -98,6 +99,9 @@ def initialize():
     is_running_test = getattr(settings, 'RUNNING_TEST', False)
 
     if not is_running_test:
+        # Force PyCrypto to re-initialize the random number generator.
+        Random.atfork()
+
         # Set up logging.
         log.init_logging()
 
@@ -110,6 +114,14 @@ def initialize():
 
         # Generate the AJAX serial, used for AJAX request caching.
         generate_ajax_serial()
+
+        # Store the AJAX serial as a template serial, so we have a reference
+        # to the real serial last modified timestamp of our templates. This
+        # is useful since the extension manager will be modifying AJAX_SERIAL
+        # to prevent stale caches for templates using hooks. Not all templates
+        # use hooks, and may want to base cache keys off TEMPLATE_SERIAL
+        # instead.
+        settings.TEMPLATE_SERIAL = settings.AJAX_SERIAL
 
         # Load all extensions
         try:
