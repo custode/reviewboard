@@ -12,6 +12,11 @@ api_token_item_mimetype = _build_mimetype('api-token')
 change_list_mimetype = _build_mimetype('review-request-changes')
 change_item_mimetype = _build_mimetype('review-request-change')
 
+configured_integration_list_mimetype = \
+    _build_mimetype('configured-integrations')
+configured_integration_item_mimetype = \
+    _build_mimetype('configured-integration')
+
 
 default_reviewer_list_mimetype = _build_mimetype('default-reviewers')
 default_reviewer_item_mimetype = _build_mimetype('default-reviewer')
@@ -58,6 +63,10 @@ hosting_service_account_list_mimetype = \
     _build_mimetype('hosting-service-accounts')
 hosting_service_account_item_mimetype = \
     _build_mimetype('hosting-service-account')
+
+
+integration_list_mimetype = _build_mimetype('integrations')
+integration_item_mimetype = _build_mimetype('integration')
 
 
 original_file_mimetype = 'text/plain'
