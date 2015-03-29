@@ -14,6 +14,7 @@ from djblets.webapi.errors import (DOES_NOT_EXIST,
 from reviewboard.integrations.models import ConfiguredIntegration
 from reviewboard.integrations.manager import get_integration_manager
 from reviewboard.webapi.base import WebAPIResource
+from reviewboard.webapi.decorators import webapi_check_local_site
 
 
 class ConfiguredIntegrationResource(WebAPIResource):
@@ -61,7 +62,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         }
     }
 
-    uri_object_key = 'integration_id'
+    uri_object_key = 'config_id'
     allowed_methods = ('GET', 'PUT', 'DELETE')
 
     def __init__(self, integration_manager):
@@ -96,6 +97,12 @@ class ConfiguredIntegrationResource(WebAPIResource):
     def has_access_permissions(self, request, config, *args, **kwargs):
         return config.is_accessible_by(request.user)
 
+    def has_modify_permissions(self, request, config, *args, **kwargs):
+        return config.is_mutable_by(request.user)
+
+    def has_delete_permissions(self, request, config, *args, **kwargs):
+        return config.is_mutable_by(request.user)
+
     def get_queryset(self, request, is_list=False, *args, **kwargs):
         """Returns a queryset for the configuredIntegration models.
 
@@ -113,6 +120,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         return queryset
 
     @webapi_login_required
+    @webapi_check_local_site
     @augment_method_from(WebAPIResource)
     def get(self, request, *args, **kwargs):
         pass
@@ -123,6 +131,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         pass
 
     @webapi_login_required
+    @webapi_check_local_site
     @webapi_response_errors(DOES_NOT_EXIST, NOT_LOGGED_IN, PERMISSION_DENIED)
     @webapi_request_fields(
         required={
@@ -143,7 +152,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         except:
             return DOES_NOT_EXIST
 
-        if not self.has_access_permissions(request, config, *args, **kwargs):
+        if not self.has_modify_permissions(request, config, *args, **kwargs):
             return self.get_no_access_error(request, obj=config, *args,
                                             **kwargs)
 
@@ -159,6 +168,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         }
 
     @webapi_login_required
+    @webapi_check_local_site
     @webapi_response_errors(DOES_NOT_EXIST, NOT_LOGGED_IN, PERMISSION_DENIED)
     def delete(self, request, *args, **kwargs):
         """Handle DELETE of configured integration with integration manager.
@@ -171,7 +181,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         except:
             return DOES_NOT_EXIST
 
-        if not self.has_access_permissions(request, config, *args, **kwargs):
+        if not self.has_modify_permissions(request, config, *args, **kwargs):
             return self.get_no_access_error(request, obj=config, *args,
                                             **kwargs)
 
