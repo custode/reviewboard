@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import logging
 
+from reviewboard.integrations.configurations import Configurations
 
 class Integration(object):
     """Base class for an intergration.
@@ -61,7 +62,7 @@ class Integration(object):
             self.integration_id = ".".join(
                 [self.__module__, self.__class__.__name__])
 
-        self.config = config
+        self.config = Configurations(config)
 
         self.initialize()
 
