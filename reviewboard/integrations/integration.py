@@ -53,6 +53,9 @@ class Integration(object):
     # The given template should extends IntegrationConfigTemplate.
     config_template = None
 
+    # The default configurations for a new integration.
+    default_configurations = {}
+
     def __init__(self, config):
         if not self.integration_id:
             self.integration_id = ".".join(
