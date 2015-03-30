@@ -76,6 +76,11 @@ class IntegrationManager(object):
             config = self._config_instances[config_id]
             config.integration.initialize()
 
+    def create_config(self, config):
+        """Create a new configured integration."""
+        config.save()
+        self.register_config(config)
+
     def get_integrations(self):
         """Returns all registered integrations."""
         return get_integrations()
