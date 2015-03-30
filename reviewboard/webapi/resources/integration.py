@@ -2,16 +2,12 @@ from __future__ import unicode_literals
 
 from djblets.util.decorators import augment_method_from
 from djblets.webapi.responses import WebAPIResponse
-from djblets.webapi.errors import NOT_LOGGED_IN, PERMISSION_DENIED
 
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
 from reviewboard.integrations.manager import get_integration_manager
 from reviewboard.webapi.base import WebAPIResource
-from reviewboard.webapi.decorators import (webapi_check_local_site,
-                                           webapi_login_required,
-                                           webapi_response_errors)
 
 
 class IntegrationResource(WebAPIResource):
