@@ -553,7 +553,6 @@ class IntegrationHook(ExtensionHook):
     def __init__(self, extension, integration):
         super(IntegrationHook, self).__init__(extension)
         self.integration = integration
-        self.integration.extension = extension
         register_integration(self.integration)
 
     def shutdown(self):
