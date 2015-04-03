@@ -4,8 +4,8 @@ from reviewboard.extensions.base import Extension
 from reviewboard.integrations.integration import (Integration,
                                                   register_integration,
                                                   unregister_integration)
-from reviewboard.integrations.models import ConfiguredIntegration
 from reviewboard.integrations.manager import IntegrationManager
+from reviewboard.integrations.models import ConfiguredIntegration
 from reviewboard.testing.testcase import TestCase
 
 
@@ -88,7 +88,8 @@ class IntegrationManagerTest(TestCase):
 
     def test_unregister_exisiting_config(self):
         """Testing integration manager unregistering registered configured
-        integration."""
+        integration.
+        """
         config1 = self.create_configured_integration(
             integration_id='TestIntegration')
         config2 = self.create_configured_integration(
@@ -104,7 +105,8 @@ class IntegrationManagerTest(TestCase):
 
     def test_unregister_non_existent_config(self):
         """Testing integration manager unregistering nonexistent configured
-        integration."""
+        integration.
+        """
         self.assertRaises(KeyError, self.manager.unregister_config, 3)
 
     def test_toggle_config(self):

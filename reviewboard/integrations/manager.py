@@ -24,9 +24,8 @@ class IntegrationManager(object):
         """
         if config.pk in self._config_instances and not reregister:
             raise KeyError('This configuration is already registered.')
-        else:
-            if config.integration:
-                self._config_instances[config.pk] = config
+        elif config.integration:
+            self._config_instances[config.pk] = config
 
     def unregister_config(self, config_id):
         """Unregister the configured integration.

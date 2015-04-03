@@ -281,7 +281,7 @@ class TestCase(DjbletsTestCase):
                                       configuration={},
                                       description="Test description",
                                       local_site=None):
-        """Creates a configured integration for testing.
+        """Create a configured integration for testing.
 
         The configured integration is populated with the default data that can
         be overridden by the caller. It may optionally be attached to a
