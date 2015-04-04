@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 
 from six import itervalues
 
-from reviewboard.integrations.integration import (get_integrations,
-                                                  get_integration)
 from reviewboard.integrations.models import ConfiguredIntegration
 
 
@@ -75,21 +73,13 @@ class IntegrationManager(object):
             config = self._config_instances[config_id]
             config.integration.initialize()
 
-    def get_integrations(self):
-        """Returns all registered integrations."""
-        return get_integrations()
-
-    def get_integration(self, integration_id):
-        """Returns the specific integration."""
-        return get_integration(integration_id)
-
     def get_config_instances(self):
         """Returns all configured integration instances."""
         return list(itervalues(self._config_instances))
 
     def get_config_instance(self, config_id):
         """Returns the specfic configured integration instance."""
-        return self._config_instances.get(config_id, None)
+        return self._config_instances.get(config_id)
 
     def _initialize_configs(self):
         for config in ConfiguredIntegration.objects.all():
