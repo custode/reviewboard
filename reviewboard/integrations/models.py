@@ -10,7 +10,7 @@ from reviewboard.site.models import LocalSite
 
 
 class ConfiguredIntegration(models.Model):
-    """Configuration of an intgration."""
+    """Configuration of an integration."""
 
     integration_id = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True)
