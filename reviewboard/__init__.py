@@ -90,7 +90,6 @@ def initialize():
     from reviewboard import signals
     from reviewboard.admin.siteconfig import load_site_config
     from reviewboard.extensions.base import get_extension_manager
-    from reviewboard.integrations.manager import get_integration_manager
 
     # This overrides a default django templatetag (url), and we want to make
     # sure it will always get loaded in every python instance.
@@ -126,7 +125,6 @@ def initialize():
         # Load all extensions
         try:
             get_extension_manager().load()
-            get_integration_manager().load()
         except DatabaseError:
             # This database is from a time before extensions, so don't attempt
             # to load any extensions yet.
