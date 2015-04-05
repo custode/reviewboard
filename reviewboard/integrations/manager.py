@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 
 from six import itervalues
 
-from reviewboard.integrations.integration import (get_integrations,
-                                                  get_integration)
 from reviewboard.integrations.models import ConfiguredIntegration
 
 
@@ -13,9 +11,6 @@ class IntegrationManager(object):
     def __init__(self):
         self._config_instances = {}
 
-    def load(self):
-        self._initialize_configs()
-
     def register_config(self, config, reregister=False):
         """Register the configured integration.
 
@@ -24,9 +19,8 @@ class IntegrationManager(object):
         """
         if config.pk in self._config_instances and not reregister:
             raise KeyError('This configuration is already registered.')
-        else:
-            if config.integration:
-                self._config_instances[config.pk] = config
+        elif config.integration:
+            self._config_instances[config.pk] = config
 
     def unregister_config(self, config_id):
         """Unregister the configured integration.
@@ -76,26 +70,17 @@ class IntegrationManager(object):
             config = self._config_instances[config_id]
             config.integration.initialize()
 
-    def create_config(self, config):
-        """Create a new configured integration."""
-        config.save()
-        self.register_config(config)
-
-    def get_integrations(self):
-        """Returns all registered integrations."""
-        return get_integrations()
-
-    def get_integration(self, integration_id):
-        """Returns the specific integration."""
-        return get_integration(integration_id)
-
     def get_config_instances(self):
         """Returns all configured integration instances."""
+        self._initialize_configs()
         return list(itervalues(self._config_instances))
 
     def get_config_instance(self, config_id):
         """Returns the specfic configured integration instance."""
-        return self._config_instances.get(config_id, None)
+        if config_id not in self._config_instances:
+            self.register_config(ConfiguredIntegration.objects.get(
+                pk=config_id))
+        return self._config_instances.get(config_id)
 
     def _initialize_configs(self):
         for config in ConfiguredIntegration.objects.all():

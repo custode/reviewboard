@@ -7,6 +7,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
+from reviewboard.integrations.integration import get_integration
 from reviewboard.integrations.manager import get_integration_manager
 from reviewboard.integrations.models import ConfiguredIntegration
 
@@ -30,7 +31,7 @@ def configure_integration(request, integration_class=None, config_id=None,
         integration_class = manager.get_config_instance(
             int(config_id)).integration_id
 
-    integration = manager.get_integration(integration_class)
+    integration = get_integration(integration_class)
 
     if config_id:
         config_instance = manager.get_config_instance(int(config_id))
@@ -42,12 +43,13 @@ def configure_integration(request, integration_class=None, config_id=None,
             description=integration.description,
             local_site=None)
 
-    integration = manager.get_integration(integration_class)
+    if integration_class:
+        integration = get_integration(integration_class)
 
     if not integration:
         raise Http404
     else:
-        form_class = integration.form
+        form_class = integration.config_form
 
     if request.method == 'POST':
         if not config_instance.pk:

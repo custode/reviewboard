@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 
 from django.utils import six
 
-from reviewboard.integrations.integration import (register_integration,
+from reviewboard.integrations.integration import (get_integrations,
+                                                  register_integration,
                                                   unregister_integration)
 from reviewboard.integrations.manager import IntegrationManager
 from reviewboard.integrations.tests import TestIntegration
@@ -45,7 +46,7 @@ class ResourceListTests(BaseWebAPITestCase):
                              populate_items):
         if populate_items:
             manager = IntegrationManager()
-            items = manager.get_integrations()
+            items = get_integrations()
         else:
             items = []
 

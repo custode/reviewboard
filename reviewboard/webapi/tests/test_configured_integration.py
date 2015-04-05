@@ -72,24 +72,6 @@ class ResourceItemTests(BaseWebAPITestCase):
     basic_delete_use_admin = True
     basic_put_use_admin = True
 
-    def create_configured_integration(self, integration_id='TestIntegration',
-                                      is_enabled=False,
-                                      configuration={},
-                                      description='Test description',
-                                      local_site=None):
-        """Creates a configured integration for testing.
-
-        The configured integration is populated with the default data that can
-        be overridden by the caller. It may optionally be attached to a
-        LocalSite.
-        """
-        return ConfiguredIntegration.objects.create(
-            integration_id=integration_id,
-            is_enabled=is_enabled,
-            configuration={},
-            description=description,
-            local_site=local_site)
-
     @classmethod
     def setUpClass(cls):
         register_integration(TestIntegration)
