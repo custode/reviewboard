@@ -6,6 +6,7 @@ from djblets.webapi.responses import WebAPIResponse
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
+from reviewboard.integrations.integration import get_integrations
 from reviewboard.integrations.manager import get_integration_manager
 from reviewboard.webapi.base import WebAPIResource
 
@@ -28,7 +29,7 @@ class IntegrationResource(WebAPIResource):
             'type': str,
             'description': 'The description of the integration.'
         },
-        'allows_localsites': {
+        'allows_local_sites': {
             'type': bool,
             'description': 'Whether or not the integration can be configure\
                             for a local site individually'
@@ -71,7 +72,7 @@ class IntegrationResource(WebAPIResource):
                      *args, **kwargs):
         return list(map(lambda obj:
                         self.serialize_object(obj, request=request),
-                        self._integration_manager.get_integrations()))
+                        get_integrations()))
 
     @augment_method_from(WebAPIResource)
     def get_list(self, request, *args, **kwargs):
