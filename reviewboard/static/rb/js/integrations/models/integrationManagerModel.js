@@ -195,7 +195,8 @@ IntegrationManager = Backbone.Model.extend({
 /*
  * Manages configured integrations.
  *
- * This stores a collection of ConfiguredIntegration, and provides functionality
+ * This stores a collection of ConfiguredIntegration, and provides
+ * functionality
  * to load the list from the server.
  */
 ConfiguredIntegrationManager = Backbone.Model.extend({
