@@ -10,6 +10,7 @@ class IntegrationManager(object):
 
     def __init__(self):
         self._config_instances = {}
+        self._initialize_configs()
 
     def register_config(self, config, reregister=False):
         """Register the configured integration.
@@ -72,15 +73,21 @@ class IntegrationManager(object):
 
     def get_config_instances(self):
         """Returns all configured integration instances."""
+        self._initialize_configs()
         return list(itervalues(self._config_instances))
 
     def get_config_instance(self, config_id):
         """Returns the specfic configured integration instance."""
+        if config_id not in self._config_instances:
+            self.register_config(ConfiguredIntegration.objects.get(
+                pk=config_id))
+
         return self._config_instances.get(config_id)
 
     def _initialize_configs(self):
         for config in ConfiguredIntegration.objects.all():
-            self.register_config(config)
+            if config.pk not in self._config_instances:
+                self.register_config(config)
 
     def _toggle_config(self, config_id, is_enabled):
         """Toggle a configured integration.
