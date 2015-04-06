@@ -1,9 +1,9 @@
 /*
- * Display an integration class in the Manage Integration list.
+ * Display an Integration class in the Manage Integration list.
  *
  * This will show information about the Integration, and also
  * ConfiguredIntegration which belongs to this integration class.
- * It will also provide link to create new instance of this.
+ * It will also provide link to create a new instance of this.
  */
 IntegrationView = Backbone.View.extend({
     className: 'integration',
@@ -40,8 +40,8 @@ IntegrationView = Backbone.View.extend({
     /*
      * Load all the configured integrations that belongs to this integration.
      *
-     * This will load an configured integration manager view which will
-     * display all the ConfiguredIntegration object that belongs to this
+     * This will load a configured integration manager view which will
+     * display all the ConfiguredIntegration objects that belong to this
      * Integration class.
      */
     _loadConfiguredIntegrations: function() {
@@ -58,9 +58,9 @@ IntegrationView = Backbone.View.extend({
 
 
 /*
- * Displays an configured integration in Manage Integration list.
+ * Displays a configured integration in a Manage Integration list.
  *
- * This wil show all the information about the ConfiguredIntegration object,
+ * This will show all the information about the ConfiguredIntegration object,
  * and provide enabling/disabling/deleting of instance. It will also
  * provide links for configuring it.
  */
@@ -132,8 +132,8 @@ ConfiguredIntegrationView = Backbone.View.extend({
     /*
      * Delete the ConfiguredIntegration object.
      *
-     * This destory the ConfiguredIntegration by call HTTP DELETE
-     * through the destory method. The ConfiguredIntegration will be removed
+     * This destorys the ConfiguredIntegration by calling HTTP DELETE
+     * through the destroy method. The ConfiguredIntegration will be removed
      * from the list if the response from the server is a success. If not,
      * it will alert the user of the error in deleting.
      */

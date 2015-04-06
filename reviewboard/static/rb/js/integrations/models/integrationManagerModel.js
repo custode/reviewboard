@@ -1,5 +1,5 @@
 /*
- * Represent an integration class listed in the Manage Integration list.
+ * Represents an integration class listed in the Manage Integration list.
  *
  * This stores the various information about the integration.
  */
@@ -25,10 +25,10 @@ Integration = Backbone.Model.extend({
 
 
 /*
- * Represents a configured integration for a integration class.
+ * Represents a configured integration for an integration class.
  *
- * This stores the various information about the ConfiguredIntegration object
- * provides action to enable or disable the instance.
+ * This stores various information about the ConfiguredIntegration object,
+ * which provides enabling or disabling of the instances.
  */
 ConfiguredIntegration = Backbone.Model.extend({
     defaults: {
@@ -175,7 +175,7 @@ ConfiguredIntegrationCollection = Backbone.Collection.extend({
 /*
  * Manages Integrations.
  *
- * This stores a collection of Integration, and provide functionality to load
+ * This stores a collection of Integration, and provides functionality to load
  * the list from the server.
  */
 IntegrationManager = Backbone.Model.extend({
@@ -192,11 +192,10 @@ IntegrationManager = Backbone.Model.extend({
     }
 });
 
-
 /*
  * Manages configured integrations.
  *
- * This stores a collection of ConfiguredIntegration, and provide functionality
+ * This stores a collection of ConfiguredIntegration, and provides functionality
  * to load the list from the server.
  */
 ConfiguredIntegrationManager = Backbone.Model.extend({
