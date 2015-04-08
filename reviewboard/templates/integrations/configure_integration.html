@@ -2,9 +2,18 @@
 {% load djblets_utils i18n staticfiles %}
 
 {% block page_title %}
-{% blocktrans %}Configure {{integration_name}} {% endblocktrans %}
+Configure {{ config.integration.name }}
 {% endblock %}
 
 {% block form_title %}
-{% blocktrans %}Configure {{integration_name}}{% endblocktrans %}
+Configure {{ config.integration.name }}
+{% endblock %}
+
+{% block form_content %}
+
+{% if config_template %}
+{% include config_template %}
+{% endif %}
+
+{{block.super}}
 {% endblock %}

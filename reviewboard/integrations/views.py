@@ -69,6 +69,7 @@ def configure_integration(request, integration_class=None, config_id=None,
         form = form_class(config_instance)
 
     return render_to_response(template_name, RequestContext(request, {
-        'integration_name': integration.name,
+        'config': config_instance,
         'form': form,
+        'config_template': integration.config_template
     }))
