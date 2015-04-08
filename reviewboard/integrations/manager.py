@@ -23,6 +23,11 @@ class IntegrationManager(object):
         elif config.integration:
             self._config_instances[config.pk] = config
 
+            if config.is_enabled:
+                config.integration.initialize()
+            else:
+                config.integration.shutdown()
+
     def unregister_config(self, config_id):
         """Unregister the configured integration.
 
@@ -59,17 +64,9 @@ class IntegrationManager(object):
         """Disable a configured integration."""
         self._toggle_config(config_id, False)
 
-        if config_id in self._config_instances:
-            config = self._config_instances[config_id]
-            config.integration.shutdown()
-
     def enable_config(self, config_id):
         """Enable a configured integration."""
         self._toggle_config(config_id, True)
-
-        if config_id in self._config_instances:
-            config = self._config_instances[config_id]
-            config.integration.initialize()
 
     def get_config_instances(self):
         """Returns all configured integration instances."""
@@ -94,7 +91,7 @@ class IntegrationManager(object):
 
         Update the configured integration object and reregister it.
         """
-        config = ConfiguredIntegration.objects.get(pk=config_id)
+        config = self.get_config_instance(config_id)
         config.is_enabled = is_enabled
         config.save(update_fields=['is_enabled'])
 

@@ -1,5 +1,8 @@
 from __future__ import unicode_literals
 
+import uuid
+import logging
+
 from django.utils import six
 from djblets.extensions.hooks import (DataGridColumnsHook, ExtensionHook,
                                       ExtensionHookPoint, SignalHook,
@@ -560,6 +563,47 @@ class IntegrationHook(ExtensionHook):
         unregister_integration(self.integration)
 
 
+@six.add_metaclass(ExtensionHookPoint)
+class IntegrationSignalHook(ExtensionHook):
+    """Connects Integration to a Django signal."""
+
+    def __init__(self, integration, signal, callback, sender=None,
+                 sandbox_errors=True):
+        self.integration = integration
+        self.integration.hooks.add(self)
+        self.__class__.add_hook(self)
+        self.initialized = True
+
+        self.signal = signal
+        self.callback = callback
+        self.dispatch_uid = uuid.uuid1()
+        self.sender = sender
+        self.sandbox_errors = sandbox_errors
+
+        signal.connect(self._wrap_callback, sender=self.sender, weak=False,
+                       dispatch_uid=self.dispatch_uid)
+
+    def shutdown(self):
+        super(IntegrationSignalHook, self).shutdown()
+        self.signal.disconnect(dispatch_uid=self.dispatch_uid,
+                               sender=self.sender)
+
+    def _wrap_callback(self, **kwargs):
+        """Wraps a callback function, passing extra parameters and sandboxing.
+
+        This will call the callback with an extension= keyword argument,
+        and sandbox any errors (if sandbox_errors is True).
+        """
+        try:
+            self.callback(integration=self.integration, **kwargs)
+        except Exception as e:
+            logging.error('Error when calling %r from IntegrationSignalHook: %s',
+                          self.callback, e, exc_info=1)
+
+            if not self.sandbox_errors:
+                raise
+
+
 __all__ = [
     'AccountPageFormsHook',
     'AccountPagesHook',
@@ -578,6 +622,7 @@ __all__ = [
     'HeaderDropdownActionHook',
     'HostingServiceHook',
     'IntegrationHook',
+    'IntegrationSignalHook',
     'NavigationBarHook',
     'ReviewRequestActionHook',
     'ReviewRequestApprovalHook',
