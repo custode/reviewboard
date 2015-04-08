@@ -57,9 +57,9 @@ class Integration(object):
         if not self.integration_id:
             self.integration_id = '%s.%s' % (
                 [self.__module__, self.__class__.__name__])
-        self.config = config
 
-        self.initialize()
+        self.config = config
+        self.hooks = set()
 
     def initialize(self):
         """Initialize the integration.
@@ -80,7 +80,15 @@ class Integration(object):
         integration to be toggled without the need to recreate a new
         instance of the object.
         """
-        raise NotImplementedError
+        self.shutdown_hooks()
+
+    def shutdown_hooks(self):
+        """Shuts down all hooks for the integration."""
+        for hook in self.hooks:
+            if hook.initialized:
+                hook.shutdown()
+
+        self.hooks = set()
 
     def get_authentication_url(self):
         """Returns the authentication URL for the integration."""
