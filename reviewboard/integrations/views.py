@@ -61,6 +61,9 @@ def configure_integration(request, integration_class=None, config_id=None,
 
         form = form_class(config_instance, request.POST, request.FILES)
 
+        if request.POST.get('description'):
+            config_instance.description = request.POST.get('description')
+
         if form.is_valid():
             form.save()
 
