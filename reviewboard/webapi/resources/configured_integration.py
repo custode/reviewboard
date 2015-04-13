@@ -30,7 +30,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         },
         'name': {
             'type': str,
-            'description': 'The name of the integration this resource belongs.'
+            'description': 'The name of the integration class.'
         },
         'integration_description': {
             'type': str,
@@ -42,7 +42,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         },
         'integration_icon': {
             'type': str,
-            'description': 'The icon path for the integration.'
+            'description': 'The icon path for the integration class.'
         },
         'description': {
             'type': str,
@@ -58,7 +58,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         },
         'configure_link': {
             'type': str,
-            'description': 'The URL for configurating this resource.'
+            'description': 'The URL for the configure page.'
         }
     }
 
@@ -104,7 +104,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         return config.is_mutable_by(request.user)
 
     def get_queryset(self, request, is_list=False, *args, **kwargs):
-        """Returns a queryset for the configuredIntegration models.
+        """Return a queryset for the configuredIntegration models.
 
         This will returns all the model object by default. However, it accepts
         additional query paramater "integrationID" to filter down the list
