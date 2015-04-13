@@ -44,7 +44,7 @@ class Configurations(dict):
         return key in self.config.integration.default_configurations
 
     def set(self, key, value):
-        """Sets a setting's value.
+        """Set a setting's value.
 
         This is equivalent to setting the value through standard dictionary
         attribute storage.
@@ -52,13 +52,13 @@ class Configurations(dict):
         self[key] = value
 
     def load(self):
-        """Loads the settings from the database."""
+        """Load the settings from the database."""
         try:
             self.update(self.config.configuration)
         except ValueError:
             pass
 
     def save(self):
-        """Saves all current settings to the database."""
+        """Save all current settings to the database."""
         self.config.configuration = dict(self)
         self.config.save()
