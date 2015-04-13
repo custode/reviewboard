@@ -45,7 +45,6 @@ class ResourceListTests(BaseWebAPITestCase):
     def setup_basic_get_test(self, user, with_local_site, local_site_name,
                              populate_items):
         if populate_items:
-            manager = IntegrationManager()
             items = get_integrations()
         else:
             items = []
