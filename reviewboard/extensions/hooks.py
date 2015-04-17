@@ -598,8 +598,8 @@ class IntegrationSignalHook(ExtensionHook):
         try:
             self.callback(integration=self.integration, **kwargs)
         except Exception as e:
-            logging.error('Error when calling %r from IntegrationSignalHook: %s',
-                          self.callback, e, exc_info=1)
+            logging.error('Error when calling %r from IntegrationSignalHook:'
+                          ' %s', self.callback, e, exc_info=1)
 
             if not self.sandbox_errors:
                 raise
