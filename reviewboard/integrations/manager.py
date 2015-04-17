@@ -12,6 +12,9 @@ class IntegrationManager(object):
         self._config_instances = {}
         self._initialize_configs()
 
+    def load(self):
+        self._initialize_configs()
+
     def register_config(self, config, reregister=False):
         """Register the configured integration.
 
