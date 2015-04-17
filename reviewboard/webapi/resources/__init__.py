@@ -12,13 +12,13 @@ from reviewboard.diffviewer.models import DiffSet, FileDiff
 from reviewboard.changedescs.models import ChangeDescription
 from reviewboard.extensions.base import get_extension_manager
 from reviewboard.hostingsvcs.models import HostingServiceAccount
+from reviewboard.integrations.models import ConfiguredIntegration
+from reviewboard.integrations.integration import Integration
 from reviewboard.reviews.models import (Comment, DefaultReviewer,
                                         Group, ReviewRequest,
                                         ReviewRequestDraft, Review,
                                         ScreenshotComment, Screenshot,
                                         FileAttachmentComment)
-from reviewboard.integrations.models import ConfiguredIntegration
-from reviewboard.integrations.integration import Integration
 from reviewboard.scmtools.models import Repository
 from reviewboard.webapi.base import WebAPIResource
 from reviewboard.webapi.models import WebAPIToken
@@ -113,6 +113,7 @@ class Resources(object):
         register_resource_for_model(ConfiguredIntegration,
                                     self.configured_integration),
         register_resource_for_model(Integration, self.integration)
+
 
 resources = Resources()
 
