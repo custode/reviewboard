@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import json
+
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
@@ -10,9 +12,6 @@ from django.template.context import RequestContext
 from reviewboard.integrations.integration import get_integration
 from reviewboard.integrations.manager import get_integration_manager
 from reviewboard.integrations.models import ConfiguredIntegration
-
-
-manager = get_integration_manager()
 
 
 @csrf_protect
@@ -27,6 +26,8 @@ def integration_list(request,
 def configure_integration(request, integration_class=None, config_id=None,
                           template_name='integrations/configure_integration'
                                         '.html'):
+    manager = get_integration_manager()
+
     if not integration_class:
         integration_class = manager.get_config_instance(
             int(config_id)).integration_id
@@ -39,7 +40,7 @@ def configure_integration(request, integration_class=None, config_id=None,
         config_instance = ConfiguredIntegration(
             integration_id=integration_class,
             is_enabled=False,
-            configuration=integration.default_configurations,
+            configuration=json.dumps(integration.default_configurations),
             description=integration.description,
             local_site=None)
 
