@@ -25,11 +25,9 @@ class Configurations(dict):
             return self.config.integration.default_configurations[key]
 
         raise KeyError(
-            _('The settings key "%(key)s" was not found in integration'
-              '%(integration)s')
+            _('The settings key "%(key)s" was not found in integration')
             % {
                 'key': key,
-                'config': self.config.integration.integration_id
             })
 
     def __contains__(self, key):
