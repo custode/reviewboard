@@ -111,6 +111,7 @@ PIPELINE_JS = dict({
             'rb/js/extensions/models/aliases.js',
             'rb/js/extensions/models/commentDialogHookModel.js',
             'rb/js/extensions/models/reviewDialogCommentHookModel.js',
+            'rb/js/extensions/models/reviewDialogHookModel.js',
             'rb/js/pages/models/pageManagerModel.js',
             'rb/js/resources/utils/serializers.js',
             'rb/js/resources/models/baseResourceModel.js',
@@ -147,6 +148,7 @@ PIPELINE_JS = dict({
             'rb/js/ui/views/dialogView.js',
             'rb/js/ui/views/textEditorView.js',
             'rb/js/models/userSessionModel.js',
+            'rb/js/views/headerView.js'
         ),
         'output_filename': 'rb/js/base.min.js',
     },
@@ -298,6 +300,7 @@ PIPELINE_CSS = dict({
         'source_filenames': (
             'lib/css/codemirror.css',
             'lib/css/jquery-ui-1.8.24.min.css',
+            'lib/css/font-awesome-4.3.0.min.css',
             'rb/css/assets/icons.less',
             'rb/css/layout/helpers.less',
             'rb/css/pages/base.less',
