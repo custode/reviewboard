@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 from djblets.util.decorators import augment_method_from
 from djblets.webapi.responses import WebAPIResponse
 
-from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.urlresolvers import reverse
 
 from reviewboard.integrations.integration import get_integrations
 from reviewboard.integrations.manager import get_integration_manager
@@ -12,7 +12,7 @@ from reviewboard.webapi.base import WebAPIResource
 
 
 class IntegrationResource(WebAPIResource):
-    """Provides information on Integration resources."""
+    """Provide information on Integration resources."""
 
     name = 'integration'
 

@@ -5,7 +5,6 @@ from django.utils import six
 from reviewboard.integrations.integration import (get_integrations,
                                                   register_integration,
                                                   unregister_integration)
-from reviewboard.integrations.manager import IntegrationManager
 from reviewboard.integrations.tests import TestIntegration
 from reviewboard.webapi.resources import resources
 from reviewboard.webapi.tests.base import BaseWebAPITestCase
@@ -45,7 +44,6 @@ class ResourceListTests(BaseWebAPITestCase):
     def setup_basic_get_test(self, user, with_local_site, local_site_name,
                              populate_items):
         if populate_items:
-            manager = IntegrationManager()
             items = get_integrations()
         else:
             items = []

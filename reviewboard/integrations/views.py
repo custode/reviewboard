@@ -2,12 +2,12 @@ from __future__ import unicode_literals
 
 import json
 
-from django.views.decorators.csrf import csrf_protect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.views.decorators.csrf import csrf_protect
 
 from reviewboard.integrations.integration import get_integration
 from reviewboard.integrations.manager import get_integration_manager

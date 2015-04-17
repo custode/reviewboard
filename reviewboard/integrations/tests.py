@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from reviewboard.extensions.base import Extension
 from reviewboard.integrations.integration import (Integration,
                                                   register_integration,
@@ -90,28 +92,11 @@ class IntegrationManagerTest(TestCase):
 
         self.assertEqual(len(self.manager.get_config_instances()), 2)
 
-    def test_unregister_exisiting_config(self):
-        """Testing integration manager unregistering registered configured
-        integration.
-        """
-        config1 = self.create_configured_integration(
-            integration_id='TestIntegration')
-        config2 = self.create_configured_integration(
-            integration_id='TestIntegration',
-            is_enabled=True)
-        self.manager.register_config(config1)
-        self.manager.register_config(config2)
-
-        self.manager.unregister_config(1)
-
-        self.assertEqual(len(self.manager.get_config_instances()), 1)
-        self.assertNotIn(config1, self.manager.get_config_instances())
-
     def test_unregister_non_existent_config(self):
         """Testing integration manager unregistering nonexistent configured
         integration.
         """
-        self.assertRaises(KeyError, self.manager.unregister_config, 3)
+        self.assertRaises(ObjectDoesNotExist, self.manager.unregister_config, 3)
 
     def test_toggle_config(self):
         """Testing integration manager toggling of configured integration."""

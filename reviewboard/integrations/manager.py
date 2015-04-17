@@ -12,6 +12,9 @@ class IntegrationManager(object):
         self._config_instances = {}
         self._initialize_configs()
 
+    def load(self):
+        self._initialize_configs()
+
     def register_config(self, config, reregister=False):
         """Register the configured integration.
 
@@ -22,7 +25,6 @@ class IntegrationManager(object):
             raise KeyError('This configuration is already registered.')
         elif config.integration:
             self._config_instances[config.pk] = config
-
             if config.is_enabled:
                 config.integration.initialize()
             else:
@@ -67,6 +69,11 @@ class IntegrationManager(object):
     def enable_config(self, config_id):
         """Enable a configured integration."""
         self._toggle_config(config_id, True)
+
+    def create_config(self, config):
+        """Create a new configured integration."""
+        config.save()
+        self.register_config(config)
 
     def get_config_instances(self):
         """Returns all configured integration instances."""

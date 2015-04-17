@@ -200,7 +200,7 @@ class ReviewUI(object):
         This will normally just return the filename, but some may want to
         specialize to list things like page numbers or sections.
         """
-        return self.obj.filename
+        return self.obj.caption or self.obj.filename
 
     def get_extra_context(self, request):
         return {}
@@ -412,11 +412,11 @@ class FileAttachmentReviewUI(ReviewUI):
                     return handler(attachment.get_review_request(), attachment)
                 except ObjectDoesNotExist as e:
                     logging.error('Unable to load review UI for %s: %s',
-                                  attachment, e, exc_info=1)
+                                  attachment, e)
                 except Exception as e:
                     logging.error('Error instantiating '
                                   'FileAttachmentReviewUI %r: %s',
-                                  handler, e, exc_info=1)
+                                  handler, e)
 
         return None
 

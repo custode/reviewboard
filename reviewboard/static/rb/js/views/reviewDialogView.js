@@ -287,9 +287,9 @@ FileAttachmentCommentView = BaseCommentView.extend({
     thumbnailTemplate: _.template([
         '<div class="file-attachment">',
         ' <span class="filename">',
-        '  <img src="<%- fileAttachment.iconURL %>" />',
         '  <a href="<%- reviewURL %>"><%- linkText %></a>',
         ' </span>',
+        ' <span class="diffrevision"><%- revisionsStr %></span>',
         ' <div class="thumbnail"><%= thumbnailHTML %></div>',
         '</div>'
     ].join('')),
@@ -298,8 +298,30 @@ FileAttachmentCommentView = BaseCommentView.extend({
      * Renders the thumbnail.
      */
     renderThumbnail: function() {
+        var fileAttachment = this.model.get('fileAttachment'),
+            diffAgainstFileAttachment =
+                this.model.get('diffAgainstFileAttachment'),
+            revision = fileAttachment.get('revision'),
+            revisionsStr;
+
+        if (!revision) {
+            /* This predates having a revision. Don't show anything. */
+            revisionsStr = '';
+        } else if (diffAgainstFileAttachment) {
+            revisionsStr = interpolate(
+                gettext('(Revisions %(revision1)s - %(revision2)s)'),
+                {
+                    revision1: diffAgainstFileAttachment.get('revision'),
+                    revision2: revision
+                },
+                true);
+        } else {
+            revisionsStr = interpolate(gettext('(Revision %s)'), [revision]);
+        }
+
         return $(this.thumbnailTemplate(_.defaults({
-            fileAttachment: this.model.get('fileAttachment').attributes
+            fileAttachment: this.model.get('fileAttachment').attributes,
+            revisionsStr: revisionsStr
         }, this.model.attributes)));
     }
 });
@@ -536,9 +558,10 @@ RB.ReviewDialogView = Backbone.View.extend({
         ' <input id="id_shipit" type="checkbox" />',
         ' <label for="id_shipit"><%- shipItText %></label>',
         '</div>',
+        '<div class="review-dialog-hooks-container"></div>',
         '<div class="edit-field body-top"></div>',
         '<ul class="comments"></ul>',
-        '<div class="spinner"></div>',
+        '<div class="spinner"><span class="fa fa-spinner fa-pulse"></span></div>',
         '<div class="edit-field body-bottom"></div>'
     ].join('')),
 
@@ -555,6 +578,7 @@ RB.ReviewDialogView = Backbone.View.extend({
         this._$shipIt = null;
 
         this._commentViews = [];
+        this._hookViews = [];
 
         this._diffQueue = new RB.DiffFragmentQueueView({
             containerPrefix: 'review_draft_comment_container',
@@ -620,6 +644,22 @@ RB.ReviewDialogView = Backbone.View.extend({
     },
 
     /*
+     * Removes the dialog from the DOM.
+     *
+     * This will remove all the extension hook views from the dialog,
+     * and then remove the dialog itself.
+     */
+    remove: function() {
+        _.each(this._hookViews, function(hookView) {
+            hookView.remove();
+        });
+
+        this._hookViews = [];
+
+        _super(this).remove.call(this);
+    },
+
+    /*
      * Closes the review dialog.
      *
      * The dialog will be removed from the screen, and the "closed"
@@ -640,6 +680,8 @@ RB.ReviewDialogView = Backbone.View.extend({
      * the server will begin loading and rendering.
      */
     render: function() {
+        var $hooksContainer;
+
         this.$el.html(this.template({
             addHeaderText: gettext('Add header'),
             addFooterText: gettext('Add footer'),
@@ -651,6 +693,20 @@ RB.ReviewDialogView = Backbone.View.extend({
         this._$comments = this.$('.comments');
         this._$spinner = this.$('.spinner');
         this._$shipIt = this.$('#id_shipit');
+
+        $hooksContainer = this.$('.review-dialog-hooks-container');
+
+        RB.ReviewDialogHook.each(function(hook) {
+            var HookView = hook.get('viewType'),
+                hookView = new HookView({
+                    model: this.model
+                });
+
+            this._hookViews.push(hookView);
+
+            $hooksContainer.append(hookView.$el);
+            hookView.render();
+        }, this);
 
         this._bodyTopView = new HeaderFooterCommentView({
             model: this.model,

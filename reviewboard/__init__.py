@@ -90,6 +90,7 @@ def initialize():
     from reviewboard import signals
     from reviewboard.admin.siteconfig import load_site_config
     from reviewboard.extensions.base import get_extension_manager
+    from reviewboard.integrations.manager import get_integration_manager
 
     # This overrides a default django templatetag (url), and we want to make
     # sure it will always get loaded in every python instance.
@@ -120,11 +121,16 @@ def initialize():
         # to prevent stale caches for templates using hooks. Not all templates
         # use hooks, and may want to base cache keys off TEMPLATE_SERIAL
         # instead.
-        settings.TEMPLATE_SERIAL = settings.AJAX_SERIAL
+        #
+        # We only want to do this once, so we don't end up replacing it
+        # later with a modified AJAX_SERIAL later.
+        if not getattr(settings, 'TEMPLATE_SERIAL', None):
+            settings.TEMPLATE_SERIAL = settings.AJAX_SERIAL
 
         # Load all extensions
         try:
             get_extension_manager().load()
+            get_integration_manager().load()
         except DatabaseError:
             # This database is from a time before extensions, so don't attempt
             # to load any extensions yet.
