@@ -12,7 +12,7 @@ from reviewboard.webapi.base import WebAPIResource
 
 
 class IntegrationResource(WebAPIResource):
-    """Provide information on Integration resources."""
+    """Provide information on a integration."""
 
     name = 'integration'
 
@@ -50,9 +50,9 @@ class IntegrationResource(WebAPIResource):
 
     allowed_methods = ('GET',)
 
-    def __init__(self, integration_manager):
+    def __init__(self):
         super(IntegrationResource, self).__init__()
-        self._integration_manager = integration_manager
+        self._integration_manager = get_integration_manager()
 
     def serialize_icon_path_field(self, integration, *args, **kwargs):
         if not integration.extension or not integration.icon_path:
@@ -80,11 +80,7 @@ class IntegrationResource(WebAPIResource):
 
     def _get_list_impl(self, request, *args, **kwargs):
         response_args = self.build_response_args(request)
-        return WebAPIResponse(request, {
-                              'integrations': self.get_queryset(request,
-                                                                *args,
-                                                                **kwargs)
-                              }, **response_args)
+        integrations = self.get_queryset(request, *args, **kwargs)
 
-
-integration_resource = IntegrationResource(get_integration_manager())
+        return WebAPIResponse(request, {'integrations': integrations},
+                              **response_args)

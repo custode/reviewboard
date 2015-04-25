@@ -33,6 +33,8 @@ def configure_integration(request, integration_class=None, config_id=None,
 
     This page handles the configuration of a specific integration instance.
     """
+    integration = None
+
     if config_id:
         config_instance = manager.get_config_instance(int(config_id))
         integration_class = config_instance.integration.integration_id
