@@ -85,7 +85,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         if not config or not config.integration:
             return None
         else:
-            return static('ext/%s/%s' % (config.integration.extension.id,
+            return static('ext/%s/%s' % (config.integration.static_path,
                                          config.integration.icon_path))
 
     def serialize_configure_link_field(self, config, *args, **kwargs):
@@ -161,7 +161,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         else:
             self._integration_manager.disable_config(config.pk)
 
-        config = ConfiguredIntegration.objects.get(pk=config.pk)
+        config = self._integration_manager.get_config_instance(config.pk)
 
         return 200, {
             self.item_result_key: config

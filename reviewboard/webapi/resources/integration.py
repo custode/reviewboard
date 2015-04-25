@@ -55,10 +55,10 @@ class IntegrationResource(WebAPIResource):
         self._integration_manager = get_integration_manager()
 
     def serialize_icon_path_field(self, integration, *args, **kwargs):
-        if not integration.extension or not integration.icon_path:
+        if not integration.static_path or not integration.icon_path:
             return None
         else:
-            return static('ext/%s/%s' % (integration.extension.id,
+            return static('ext/%s/%s' % (integration.static_path,
                                          integration.icon_path))
 
     def serialize_new_link_field(self, integration, *args, **kwargs):
