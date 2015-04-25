@@ -48,7 +48,7 @@ IntegrationView = Backbone.View.extend({
         this._$configuredIntegrationsView = new ConfiguredIntegrationManagerView({
             el: this.$el,
             model: new ConfiguredIntegrationManager({
-                integrationID: this.model.attributes.integrationID
+                integrationId: this.model.attributes.integrationId
             })
         });
 
@@ -201,7 +201,7 @@ IntegrationManagerView = Backbone.View.extend({
 ConfiguredIntegrationManagerView = Backbone.View.extend({
     initialize: function(options) {
         this._$configuredIntegrations = null;
-        this.integrationID = options.integrationID;
+        this.integrationId = options.integrationId;
     },
 
     render: function() {
@@ -218,7 +218,7 @@ ConfiguredIntegrationManagerView = Backbone.View.extend({
         this.model.configuredIntegrations.each(function(configuredIntegration) {
             var view = new ConfiguredIntegrationView({
                 model: configuredIntegration,
-                integrationID: this.integrationID
+                integrationId: this.integrationId
             });
 
             this._$configuredIntegrations.prepend(view.$el);

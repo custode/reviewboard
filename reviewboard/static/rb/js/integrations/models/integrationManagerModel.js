@@ -5,7 +5,7 @@
  */
 Integration = Backbone.Model.extend({
     defaults: {
-        integrationID: null,
+        integrationId: null,
         name: null,
         description: null,
         iconPath: null,
@@ -14,7 +14,7 @@ Integration = Backbone.Model.extend({
 
     parse: function(rsp) {
         return {
-            integrationID: rsp.integration_id,
+            integrationId: rsp.integration_id,
             name: rsp.name,
             description: rsp.description,
             iconPath: rsp.icon_path,
@@ -158,12 +158,12 @@ ConfiguredIntegrationCollection = Backbone.Collection.extend({
     model: ConfiguredIntegration,
 
     initialize: function(options) {
-        this.integrationID = options.integrationID;
+        this.integrationId = options.integrationId;
     },
 
     url: function() {
-        return SITE_ROOT + 'api/configured-integrations/?integrationID=' +
-            this.integrationID;
+        return SITE_ROOT + 'api/configured-integrations/?integration-id=' +
+            this.integrationId;
     },
 
     parse: function(rsp) {
