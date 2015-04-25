@@ -84,3 +84,6 @@ class IntegrationResource(WebAPIResource):
 
         return WebAPIResponse(request, {'integrations': integrations},
                               **response_args)
+
+
+integration_resource = IntegrationResource()
