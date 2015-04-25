@@ -130,7 +130,6 @@ def initialize():
         # Load all extensions
         try:
             get_extension_manager().load()
-            get_integration_manager().load()
         except DatabaseError:
             # This database is from a time before extensions, so don't attempt
             # to load any extensions yet.

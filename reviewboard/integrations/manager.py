@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import logging
+
 from six import itervalues
 
 from reviewboard.integrations.models import ConfiguredIntegration
@@ -10,27 +12,20 @@ class IntegrationManager(object):
 
     def __init__(self):
         self._config_instances = {}
-        self._initialize_configs()
+        self._load_configs()
 
-    def load(self):
-        self._initialize_configs()
-
-    def register_config(self, config, reregister=False):
+    def initialize_config(self, config_id):
         """Register the configured integration.
 
-        If the item is already registered, reregister must be set to True in
-        in order to change the config.
+        Look for the config instance and do a proper initialization on its
+        integration instance.
         """
-        if config.pk in self._config_instances and not reregister:
-            raise KeyError('This configuration is already registered.')
-        elif config.integration:
-            self._config_instances[config.pk] = config
-            if config.is_enabled:
-                config.integration.initialize()
-            else:
-                config.integration.shutdown()
+        config = self.get_config_instance(config_id)
 
-    def unregister_config(self, config_id):
+        if config.integration and config.is_enabled:
+            config.integration.initialize()
+
+    def shutdown_config(self, config_id):
         """Unregister the configured integration.
 
         Look for the config instance and do a proper shutdown on its
@@ -38,29 +33,30 @@ class IntegrationManager(object):
         """
         config_instance = self.get_config_instance(config_id)
 
-        try:
-            del self._config_instances[config_instance.pk]
-        except (KeyError, AttributeError):
-            raise KeyError('This configuration is not registered.')
-
         if config_instance.integration:
             config_instance.integration.shutdown()
 
-    def update_config(self, config_id):
+    def reload_config(self, config):
         """Update the configured integration."""
-        config = ConfiguredIntegration.objects.get(pk=config_id)
-        self.register_config(config, reregister=True)
+        self._config_instances[config.pk] = config
+
+        if config.is_enabled:
+            self.initialize_config(config.pk)
+        else:
+            self.shutdown_config(config.pk)
 
     def delete_config(self, config_id):
         """Delete the configurated integration.
 
-        Unregister the config and do a proper shutdown before deleting.
+        Shutdown the config before deleting the configured integration.
         """
-        if config_id in self._config_instances:
-            self.unregister_config(config_id)
-            ConfiguredIntegration.objects.filter(pk=config_id).delete()
-        else:
-            raise KeyError('This configuration is not registered.')
+        self.shutdown_config(config_id)
+        ConfiguredIntegration.objects.filter(pk=config_id).delete()
+
+        try:
+            del self._config_instances[config_id]
+        except:
+            logging.error("Config instance %s was already deleted" % config_id)
 
     def disable_config(self, config_id):
         """Disable a configured integration."""
@@ -73,36 +69,47 @@ class IntegrationManager(object):
     def create_config(self, config):
         """Create a new configured integration."""
         config.save()
-        self.register_config(config)
+        self.reload_config(config)
 
-    def get_config_instances(self):
-        """Returns all configured integration instances."""
-        self._initialize_configs()
-        return list(itervalues(self._config_instances))
+    def get_config_instances(self, integration_id=None):
+        """Returns all configured integration instances.
+
+        If an optional ``integration_id`` parameter is given, only instances
+        belonging to paramter will be returned.
+        """
+        configs = itervalues(self._config_instances)
+
+        if integration_id:
+            configs = filter(lambda config: config.integration_id ==
+                             integration_id, configs)
+
+        return list(configs)
 
     def get_config_instance(self, config_id):
         """Returns the specfic configured integration instance."""
-        if config_id not in self._config_instances:
-            self.register_config(ConfiguredIntegration.objects.get(
-                pk=config_id))
+        try:
+            return self._config_instances[config_id]
+        except (KeyError, AttributeError):
+            raise KeyError('This configuration is not registered.')
 
-        return self._config_instances.get(config_id)
+    def _load_configs(self):
+        """Load and cache all configured integrations."""
+        configs = ConfiguredIntegration.objects.all()
 
-    def _initialize_configs(self):
-        for config in ConfiguredIntegration.objects.all():
-            if config.pk not in self._config_instances:
-                self.register_config(config)
+        for config in configs:
+            self._config_instances[config.pk] = config
 
     def _toggle_config(self, config_id, is_enabled):
         """Toggle a configured integration.
 
-        Update the configured integration object and reregister it.
+        Update the configuration of configured integration object and
+        the state of its integration instance.
         """
         config = self.get_config_instance(config_id)
         config.is_enabled = is_enabled
         config.save(update_fields=['is_enabled'])
 
-        self.register_config(config, reregister=True)
+        self.reload_config(config)
 
 
 _integration_manager = None

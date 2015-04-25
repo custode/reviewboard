@@ -17,6 +17,7 @@ class TestIntegration(Integration):
     integration_id = 'TestIntegration'
     name = 'Test Integration'
     description = 'Add test integration for your review.'
+    static_path = "test"
     extension = TestExtension
 
     def initialize(self):
@@ -48,8 +49,8 @@ class IntegrationManagerTest(TestCase):
             integration_id='TestIntegration',
             is_enabled=True
         )
-        self.manager.register_config(config1)
-        self.manager.register_config(config2)
+        self.manager.reload_config(config1)
+        self.manager.reload_config(config2)
 
         configs = self.manager.get_config_instances()
         config = ConfiguredIntegration.objects.get(pk=1)
@@ -64,61 +65,34 @@ class IntegrationManagerTest(TestCase):
         configs = self.manager.get_config_instances()
         self.assertEqual(len(configs), 0)
 
-    def test_register_duplicate_config(self):
-        """Testing integration manager registering duplicate configured
-        integration.
-        """
-        config1 = self.create_configured_integration(
-            integration_id='TestIntegration'
-        )
-        self.manager.register_config(config1)
-
-        self.assertRaises(KeyError, self.manager.register_config, config1)
-
-    def test_register_duplicate_config_with_reregister(self):
-        """Testing integration manager updating registered configured
-        integration.
-        """
-        config1 = self.create_configured_integration(
-            integration_id='TestIntegration')
-        config2 = self.create_configured_integration(
-            integration_id='TestIntegration',
-            is_enabled=True)
-        self.manager.register_config(config1)
-        self.manager.register_config(config2)
-        self.manager.update_config(1)
-
-        self.assertEqual(len(self.manager.get_config_instances()), 2)
-
-    def test_unregister_exisiting_config(self):
-        """Testing integration manager unregistering registered configured
-        integration.
-        """
-        config1 = self.create_configured_integration(
-            integration_id='TestIntegration')
-        config2 = self.create_configured_integration(
-            integration_id='TestIntegration',
-            is_enabled=True)
-        self.manager.register_config(config1)
-        self.manager.register_config(config2)
-
-        self.manager.unregister_config(1)
-
-        self.assertEqual(len(self.manager.get_config_instances()), 1)
-        self.assertNotIn(config1, self.manager.get_config_instances())
-
-    def test_unregister_non_existent_config(self):
+    def test_shutdown_unknown_config(self):
         """Testing integration manager unregistering nonexistent configured
         integration.
         """
-        self.assertRaises(KeyError, self.manager.unregister_config, 3)
+        self.assertRaises(KeyError, self.manager.shutdown_config, 3)
+
+    def test_delete_config(self):
+        """Testing integration manager deleting configured integration."""
+        config1 = self.create_configured_integration(
+            integration_id='TestIntegration',
+        )
+
+        self.manager.reload_config(config1)
+        self.manager.delete_config(1)
+
+        configs = self.manager.get_config_instances()
+        self.assertEqual(len(configs), 0)
+
+    def test_delete_unknown_config(self):
+        """Testing integration manager deleting unknown config"""
+        self.assertRaises(KeyError, self.manager.delete_config, 3)
 
     def test_toggle_config(self):
         """Testing integration manager toggling of configured integration."""
         config1 = self.create_configured_integration(
             integration_id='TestIntegration'
         )
-        self.manager.register_config(config1)
+        self.manager.reload_config(config1)
 
         config = ConfiguredIntegration.objects.get(pk=1)
         self.assertFalse(config.is_enabled)
