@@ -18,7 +18,7 @@ from reviewboard.webapi.decorators import webapi_check_local_site
 
 
 class ConfiguredIntegrationResource(WebAPIResource):
-    """Provides information on configuredIntegration resources."""
+    """Provides information on configured integration."""
 
     model = ConfiguredIntegration
     name = 'configured_integration'
@@ -65,9 +65,9 @@ class ConfiguredIntegrationResource(WebAPIResource):
     uri_object_key = 'config_id'
     allowed_methods = ('GET', 'PUT', 'DELETE')
 
-    def __init__(self, integration_manager):
+    def __init__(self):
         super(ConfiguredIntegrationResource, self).__init__()
-        self._integration_manager = integration_manager
+        self._integration_manager = get_integration_manager()
 
     def serialize_name_field(self, config, *args, **kwargs):
         if not config or not config.integration:
@@ -85,7 +85,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
         if not config or not config.integration:
             return None
         else:
-            return static('ext/%s/%s' % (config.integration.extension.id,
+            return static('ext/%s/%s' % (config.integration.static_path,
                                          config.integration.icon_path))
 
     def serialize_configure_link_field(self, config, *args, **kwargs):
@@ -104,18 +104,18 @@ class ConfiguredIntegrationResource(WebAPIResource):
         return config.is_mutable_by(request.user)
 
     def get_queryset(self, request, is_list=False, *args, **kwargs):
-        """Return a queryset for the configuredIntegration models.
+        """Return a queryset for the configured integration models.
 
         This will returns all the model object by default. However, it accepts
-        additional query paramater "integrationID" to filter down the list
+        additional query paramater ``integration-id`` to filter down the list
         for each integration class.
         """
         queryset = self.model.objects.all()
 
         if is_list:
-            if 'integrationID' in request.GET:
+            if 'integration-id' in request.GET:
                 queryset = queryset.filter(
-                    integration_id=request.GET.get('integrationID'))
+                    integration_id=request.GET.get('integration-id'))
 
         return queryset
 
@@ -141,11 +141,11 @@ class ConfiguredIntegrationResource(WebAPIResource):
             },
         },
     )
-    def update(self, request, *args, **kwargs):
-        """Update the state of the ConfiguredIntegration.
+    def update(self, request, enabled, *args, **kwargs):
+        """Update the state of the conigured integration.
 
-        This will enable or disable the ConfiguredIntegration instance
-        with the initilize or shutdown method from the Integration class.
+        This will enable or disable the configured integration instance
+        with the proper initialization or shutdown process.
         """
         try:
             config = self.get_object(request, *args, **kwargs)
@@ -156,12 +156,12 @@ class ConfiguredIntegrationResource(WebAPIResource):
             return self.get_no_access_error(request, obj=config, *args,
                                             **kwargs)
 
-        if kwargs.get('enabled'):
+        if enabled:
             self._integration_manager.enable_config(config.pk)
         else:
             self._integration_manager.disable_config(config.pk)
 
-        config = ConfiguredIntegration.objects.get(pk=config.pk)
+        config = self._integration_manager.get_config_instance(config.pk)
 
         return 200, {
             self.item_result_key: config
@@ -171,7 +171,7 @@ class ConfiguredIntegrationResource(WebAPIResource):
     @webapi_check_local_site
     @webapi_response_errors(DOES_NOT_EXIST, NOT_LOGGED_IN, PERMISSION_DENIED)
     def delete(self, request, *args, **kwargs):
-        """Handle DELETE of configured integration with integration manager.
+        """Delete a configured integration.
 
         This is used to delete a configured integration object if the user
         has permissions to do so.
@@ -190,5 +190,4 @@ class ConfiguredIntegrationResource(WebAPIResource):
         return 204, {}
 
 
-configured_integration_resource = ConfiguredIntegrationResource(
-    get_integration_manager())
+configured_integration_resource = ConfiguredIntegrationResource()

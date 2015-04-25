@@ -21,14 +21,15 @@ from reviewboard.datagrids.grids import (DashboardDataGrid,
                                          UserPageReviewRequestDataGrid)
 from reviewboard.hostingsvcs.service import (register_hosting_service,
                                              unregister_hosting_service)
+from reviewboard.integrations.integration import (register_integration,
+                                                  unregister_integration)
+from reviewboard.integrations.manager import get_integration_manager
 from reviewboard.reviews.fields import (get_review_request_fieldset,
                                         register_review_request_fieldset,
                                         unregister_review_request_fieldset)
 from reviewboard.reviews.ui.base import register_ui, unregister_ui
 from reviewboard.webapi.server_info import (register_webapi_capabilities,
                                             unregister_webapi_capabilities)
-from reviewboard.integrations.integration import (register_integration,
-                                                  unregister_integration)
 
 
 @six.add_metaclass(ExtensionHookPoint)
@@ -556,12 +557,22 @@ class IntegrationHook(ExtensionHook):
     def __init__(self, extension, integration):
         super(IntegrationHook, self).__init__(extension)
         self.integration = integration
-        self.integration.extension = extension
+        self.integration.static_path = extension.id
+        self.manager = get_integration_manager()
+
         register_integration(self.integration)
+
+        for config in self.manager.get_config_instances(self.integration.
+                                                        integration_id):
+            self.manager.reload_config(config)
 
     def shutdown(self):
         super(IntegrationHook, self).shutdown()
         unregister_integration(self.integration)
+
+        for config in self.manager.get_config_instances(self.integration.
+                                                        integration_id):
+            self.manager.shutdown_config(config.pk)
 
 
 @six.add_metaclass(ExtensionHookPoint)
@@ -592,7 +603,7 @@ class IntegrationSignalHook(ExtensionHook):
     def _wrap_callback(self, **kwargs):
         """Wraps a callback function, passing extra parameters and sandboxing.
 
-        This will call the callback with an extension= keyword argument,
+        This will call the callback with an integration= keyword argument,
         and sandbox any errors (if sandbox_errors is True).
         """
         try:

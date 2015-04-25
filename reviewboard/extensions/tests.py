@@ -436,6 +436,7 @@ class IntegrationHookTest(TestCase):
 
         manager = ExtensionManager('')
         self.extension = DummyExtension(extension_manager=manager)
+        self.extension.id = "DummyExtension"
 
     def tearDown(self):
         super(IntegrationHookTest, self).tearDown()

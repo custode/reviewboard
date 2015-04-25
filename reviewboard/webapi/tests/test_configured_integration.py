@@ -53,7 +53,7 @@ class ResourceListTests(BaseWebAPITestCase):
 
         if populate_items:
             manager = IntegrationManager()
-            manager.register_config(config, reregister=True)
+            manager.reload_config(config)
             items = manager.get_config_instances()
         else:
             items = []
@@ -144,7 +144,7 @@ class ResourceItemTests(BaseWebAPITestCase):
             local_site=local_site)
         manager = get_integration_manager()
         config.save()
-        manager.register_config(config, True)
+        manager.reload_config(config)
 
         return (get_configured_integration_item_url(config, local_site_name),
                 [config])
