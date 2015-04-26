@@ -12,7 +12,7 @@ from reviewboard.webapi.base import WebAPIResource
 
 
 class IntegrationResource(WebAPIResource):
-    """Provide information on a integration."""
+    """Provide information on integration."""
 
     name = 'integration'
 
