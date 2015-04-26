@@ -73,8 +73,7 @@ def configure_integration(request, integration_class=None, config_id=None,
         if request.POST.get('description'):
             config_instance.description = request.POST.get('description')
         else:
-            default_description = config_instance.integration.description
-            config_instance.description = default_description
+            config_instance.description = integration.description
 
         if form.is_valid():
             form.save()
