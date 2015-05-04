@@ -16,6 +16,7 @@ from django.db.models import get_apps
 from djblets.testing.testcases import TestCase as DjbletsTestCase
 
 from reviewboard import scmtools, initialize
+from reviewboard.accounts.models import ReviewRequestVisit
 from reviewboard.attachments.models import FileAttachment
 from reviewboard.diffviewer.differ import DiffCompatVersion
 from reviewboard.diffviewer.models import DiffSet, DiffSetHistory, FileDiff
@@ -345,7 +346,7 @@ class TestCase(DjbletsTestCase):
                               publish=False, commit_id=None, changenum=None,
                               repository=None, id=None,
                               create_repository=False):
-        """Creates a ReviewRequest for testing.
+        """Create a ReviewRequest for testing.
 
         The ReviewRequest may optionally be attached to a LocalSite. It's also
         populated with default data that can be overridden by the caller.
@@ -400,6 +401,23 @@ class TestCase(DjbletsTestCase):
 
         return review_request
 
+    def create_visit(self, review_request, visibility, user='doc',
+                     username=None, timestamp=None):
+        """Create a ReviewRequestVisit for testing.
+
+        The ReviewRequestVisit is tied to the given ReviewRequest and User.
+        It's populated with default data that can be overridden by the caller.
+
+        The provided user may either be a username or a User object.
+        """
+        if not isinstance(user, basestring):
+            user = User.objects.get(username=user)
+
+        return ReviewRequestVisit.objects.create(
+            review_request=review_request,
+            visibility=visibility,
+            user=user)
+
     def create_review(self, review_request, user='dopey', username=None,
                       body_top='Test Body Top', body_bottom='Test Body Bottom',
                       ship_it=False, publish=False):
@@ -428,7 +446,8 @@ class TestCase(DjbletsTestCase):
         return review
 
     def create_review_group(self, name='test-group', with_local_site=False,
-                            local_site=None, visible=True, invite_only=False):
+                            local_site=None, visible=True, invite_only=False,
+                            is_default_group=False):
         """Creates a review group for testing.
 
         The group may optionally be attached to a LocalSite. It's also
@@ -441,7 +460,8 @@ class TestCase(DjbletsTestCase):
             name=name,
             local_site=local_site,
             visible=visible,
-            invite_only=invite_only)
+            invite_only=invite_only,
+            is_default_group=is_default_group)
 
     def create_reply(self, review, user='grumpy', username=None,
                      body_top='Test Body Top', timestamp=None,

@@ -275,6 +275,9 @@ SVNTOOL_BACKENDS = [
     'reviewboard.scmtools.svn.subvertpy',
 ]
 
+# Gravatar configuration.
+GRAVATAR_DEFAULT = 'mm'
+
 
 # Load local settings.  This can override anything in here, but at the very
 # least it needs to define database connectivity.
