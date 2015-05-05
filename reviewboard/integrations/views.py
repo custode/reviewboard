@@ -68,12 +68,8 @@ def configure_integration(request, integration_class=None, config_id=None,
         else:
             redirect_path = request.path + '?save=1'
 
-        form = form_class(config_instance, request.POST, request.FILES)
 
-        if request.POST.get('description'):
-            config_instance.description = request.POST.get('description')
-        else:
-            config_instance.description = integration.description
+        form = form_class(config_instance, request.POST, request.FILES)
 
         if form.is_valid():
             form.save()
