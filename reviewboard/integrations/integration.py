@@ -63,6 +63,7 @@ class Integration(object):
                 [self.__module__, self.__class__.__name__])
 
         self.config = Configurations(config)
+        self.local_site = config.local_site
         self.hooks = set()
 
     def initialize(self):
