@@ -23,6 +23,8 @@ class IntegrationManager(object):
         config = self.get_config_instance(config_id)
 
         if config.integration and config.is_enabled:
+            config.integration.shutdown()
+            config.integration.local_site = config.local_site
             config.integration.initialize()
 
     def shutdown_config(self, config_id):
