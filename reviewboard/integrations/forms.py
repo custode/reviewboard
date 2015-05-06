@@ -30,8 +30,7 @@ class IntegrationSettingsForm(SiteSettingsForm):
         queryset=LocalSite.objects,
         required=False,
         help_text=_('The name of the local site to receive review request'
-                    'from.'),
-        )
+                    'from.'))
 
     def __init__(self, config, *args, **kwargs):
         self.config = config
