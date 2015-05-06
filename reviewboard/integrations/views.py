@@ -73,6 +73,7 @@ def configure_integration(request, integration_class=None, config_id=None,
 
         if form.is_valid():
             form.save()
+            manager.reload_config(config_instance)
 
             return HttpResponseRedirect(redirect_path)
     else:
