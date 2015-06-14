@@ -54,8 +54,10 @@
 @review-request-action-menu-border-color: @review-request-action-border-color;
 @review-request-action-menu-bg: @review-request-action-active-bg;
 @review-request-action-menu-item-hover-bg: @review-request-action-hover-bg;
-@review-request-action-padding-horiz: 0.6em;
-@review-request-action-padding-vert: 1.2em;
+@review-request-action-padding-vert: 0.6em;
+@review-request-action-padding-horiz: 1.2em;
+
+@review-request-action-mobile-padding: 0.3em;
 
 @review-request-label-color: #575012;
 @review-request-link-color: #0000EE;
@@ -104,6 +106,8 @@
 @z-index-event-overlay: 30;
 @z-index-subevent-overlay: @z-index-event-overlay + 1;
 @z-index-filter-overlay: 40;
+@z-index-mobile-headerbar: 50;
+@z-index-logo: @z-index-mobile-headerbar;
 @z-index-banner: 90;
 @z-index-diff-collapse-btn: 100;
 @z-index-menu: 110;
@@ -112,8 +116,6 @@
 @z-index-spinner: 140;
 @z-index-nav-menu-mask: 199;
 @z-index-nav-menu: 200;
-@z-index-mobile-headerbar: 201;
-@z-index-logo: @z-index-mobile-headerbar;
 
 // Icon dimensions
 @rb-icon-edit-width: 20px;
@@ -201,13 +203,16 @@
 @inline-actions-hover-bg: darken(@inline-actions-bg, 5%);
 
 // Datagrids
-@datagrid-bg: #FFFFFF;
-@datagrid-border-color: #999999;
+@datagrid-bg: @box-bg;
+@datagrid-border-color: @box-border-color;
 @datagrid-paginator-bg: #EEE;
 @datagrid-paginator-border-color: #BBB;
 @datagrid-actions-bg: @datagrid-paginator-bg;
 @datagrid-actions-offset-left: 1em;
-@datagrid-header-bg: #D0E6FF;
+@datagrid-header-bg: @box-title-bg;
+@datagrid-row-even-bg: #FBFBFB;
+@datagrid-row-odd-bg: #FFFFFF;
+@datagrid-row-border-color: #F0F0F0;
 
 // Page Sidebar
 @page-sidebar-bg: #E9E9E9;
@@ -235,11 +240,22 @@
 @summary-label-discarded-bg: #DDDDDD;
 @summary-label-discarded-border-color: darken(@summary-label-discarded-bg, 25%);
 @summary-label-discarded-text-color: #555555;
+@summary-label-archived-bg: #FAFAFA;
+@summary-label-archived-border-color: darken(@summary-label-archived-bg, 25%);
+@summary-label-archived-text-color: #555555;
+@summary-label-muted-bg: #DDDDDD;
+@summary-label-muted-border-color: darken(@summary-label-muted-bg, 25%);
+@summary-label-muted-text-color: #555555;
 
 // New review request page
-@new-review-request-sidebar-bg: #333333;
+@new-review-request-bg: #FFFFFF;
+@new-review-request-commit-icon-color: #888;
+@new-review-request-commit-info-color: #666;
+@new-review-request-jump-to-commit-color: #71A6E2;
+@new-review-request-summary-posted-color: #777;
 
 // Mobile
+@mobile-back-forward-link-color: #444;
 @mobile-menu-animate-duration: 0.3s;
 @mobile-menu-animate-timing-func: ease-out;
 @mobile-menu-bg-color: #383A46;

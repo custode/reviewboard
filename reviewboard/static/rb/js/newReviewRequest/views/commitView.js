@@ -9,14 +9,29 @@ RB.CommitView = Backbone.View.extend({
     className: 'commit',
 
     template: _.template([
-        '<div class="progress"></div>',
-        '<div class="summary">',
-        ' <%- summary %>',
-        '  <% if (reviewRequestURL) { %>',
-        '   <div class="rb-icon rb-icon-jump-to jump-to-commit"/>',
-        '  <% } %>',
+        '<div class="progress">',
+        ' <span class="fa fa-spinner fa-pulse"></span>',
         '</div>',
-        '<div><%= details %></div>'
+        '<div class="summary">',
+        '  <% if (reviewRequestURL) { %>',
+        '   <span class="fa fa-arrow-circle-right jump-to-commit"/>',
+        '  <% } %>',
+        ' <%- summary %>',
+        '</div>',
+        '<div class="commit-info">',
+        ' <span class="revision">',
+        '  <span class="fa fa-code-fork"></span>',
+        '  <%- revision %>',
+        ' </span>',
+        ' <span class="author">',
+        '  <span class="fa fa-user"></span>',
+        '  <%- author %>',
+        ' </span>',
+        ' <span class="time">',
+        '  <span class="fa fa-clock-o"></span>',
+        '  <time class="timesince" datetime="<%- date %>"></time>',
+        ' </span>',
+        '</div>'
     ].join('')),
 
     events: {
@@ -33,15 +48,14 @@ RB.CommitView = Backbone.View.extend({
             commitID = commitID.slice(0, 7);
         }
 
+        if (this.model.get('reviewRequestURL')) {
+            this.$el.addClass('has-review-request');
+        }
+
         this.$el.html(this.template(_.defaults({
-            'details': interpolate(
-                gettext('Revision %(revision)s by <span class="author">%(author)s</span>, <time class="timesince" datetime="%(date)s"></time>.'),
-                {
-                    revision: _.escape(commitID),
-                    author: _.escape(this.model.get('authorName')),
-                    date: this.model.get('date').toISOString()
-                },
-                true)
+            revision: commitID,
+            author: this.model.get('authorName'),
+            'date': this.model.get('date').toISOString()
         }, this.model.attributes)));
         this.$('.timesince').timesince();
 

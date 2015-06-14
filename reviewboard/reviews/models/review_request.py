@@ -26,10 +26,12 @@ from reviewboard.reviews.models.base_review_request_details import \
     BaseReviewRequestDetails
 from reviewboard.reviews.models.group import Group
 from reviewboard.reviews.models.screenshot import Screenshot
-from reviewboard.reviews.signals import (review_request_publishing,
+from reviewboard.reviews.signals import (review_request_closed,
+                                         review_request_closing,
                                          review_request_published,
+                                         review_request_publishing,
                                          review_request_reopened,
-                                         review_request_closed)
+                                         review_request_reopening)
 from reviewboard.scmtools.models import Repository
 from reviewboard.site.models import LocalSite
 from reviewboard.site.urlresolvers import local_site_reverse
@@ -368,16 +370,16 @@ class ReviewRequest(BaseReviewRequestDetails):
         This performs several checks to ensure that the user has access.
         This user has access if:
 
-          * The review request is public or the user can modify it (either
-            by being an owner or having special permissions).
+        * The review request is public or the user can modify it (either
+          by being an owner or having special permissions).
 
-          * The repository is public or the user has access to it (either by
-            being explicitly on the allowed users list, or by being a member
-            of a review group on that list).
+        * The repository is public or the user has access to it (either by
+          being explicitly on the allowed users list, or by being a member
+          of a review group on that list).
 
-          * The user is listed as a requested reviewer or the user has access
-            to one or more groups listed as requested reviewers (either by
-            being a member of an invite-only group, or the group being public).
+        * The user is listed as a requested reviewer or the user has access
+          to one or more groups listed as requested reviewers (either by
+          being a member of an invite-only group, or the group being public).
         """
         # Users always have access to their own review requests.
         if self.submitter == user:
@@ -697,6 +699,13 @@ class ReviewRequest(BaseReviewRequestDetails):
         if type not in [self.SUBMITTED, self.DISCARDED]:
             raise AttributeError("%s is not a valid close type" % type)
 
+        review_request_closing.send(sender=self.__class__,
+                                    user=user,
+                                    review_request=self,
+                                    type=type,
+                                    description=description,
+                                    rich_text=rich_text)
+
         draft = get_object_or_none(self.draft)
 
         if self.status != type:
@@ -753,6 +762,13 @@ class ReviewRequest(BaseReviewRequestDetails):
             raise PermissionError
 
         if self.status != self.PENDING_REVIEW:
+            # The reopening signal is only fired when actually making a status
+            # change since the main consumers (extensions) probably only care
+            # about changes.
+            review_request_reopening.send(sender=self.__class__,
+                                          user=user,
+                                          review_request=self)
+
             changedesc = ChangeDescription()
             status_field = get_review_request_field('status')(self)
             status_field.record_change_entry(changedesc, self.status,
@@ -776,7 +792,7 @@ class ReviewRequest(BaseReviewRequestDetails):
         review_request_reopened.send(sender=self.__class__, user=user,
                                      review_request=self)
 
-    def publish(self, user):
+    def publish(self, user, trivial=False):
         """Publishes the current draft attached to this review request.
 
         The review request will be mark as public, and signals will be
@@ -826,7 +842,7 @@ class ReviewRequest(BaseReviewRequestDetails):
         self.save(update_counts=True)
 
         review_request_published.send(sender=self.__class__, user=user,
-                                      review_request=self,
+                                      review_request=self, trivial=trivial,
                                       changedesc=changes)
 
     def _update_counts(self):

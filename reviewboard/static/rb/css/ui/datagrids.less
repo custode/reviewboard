@@ -41,16 +41,16 @@ body.datagrid-page {
 
     .datagrid {
       tr {
-        background: transparent;
+        background: @datagrid-row-odd-bg;
 
         &.even {
-          background: #FBFBFB;
+          background: @datagrid-row-even-bg;
         }
       }
 
       tbody {
         td, th {
-          border-bottom: 1px #F0F0F0 solid;
+          border-bottom: 1px @datagrid-row-border-color solid;
           padding: 5px;
 
           &:last-child {
@@ -554,6 +554,18 @@ body.datagrid-page {
         background: @summary-label-discarded-bg;
         border: 1px @summary-label-discarded-border-color solid;
         color: @summary-label-discarded-text-color;
+      }
+
+      &.label-archived {
+        background: @summary-label-archived-bg;
+        border: 1px @summary-label-archived-border-color solid;
+        color: @summary-label-archived-text-color;
+      }
+
+      &.label-muted {
+        background: @summary-label-muted-bg;
+        border: 1px @summary-label-muted-border-color solid;
+        color: @summary-label-muted-text-color;
       }
     }
 
